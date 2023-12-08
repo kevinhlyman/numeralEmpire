@@ -1,0 +1,28 @@
+#gameBoard
+{
+  border:1px solid orange;
+  background-color:turquoise;
+}
+.hexagon {
+    width: 100px; 
+    height: 90px;
+    background-color: white;
+    /*clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);*/
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    display:inline-block;
+    margin-right:50px
+}
+.row
+{
+  text-align: center;
+  /*border:1px solid blue;*/
+}
+.row.odd
+{
+  margin-left:154px;
+  margin-top:-44px;
+}
+.row.even
+{
+  margin-top:-44px;
+}
