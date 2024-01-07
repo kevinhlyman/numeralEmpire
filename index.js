@@ -1,3 +1,6 @@
+import Hex from './Hex.js';
+
+/** @type {Hex[][]} */
 let worldMap = [];
 
 document.addEventListener("DOMContentLoaded",function(){
@@ -13,24 +16,25 @@ function createWorld()
 {
     //Reset the world and get the rows and columns
     worldMap = [];
-    let rows = document.getElementById("rowsInput").value;
-    let columns = document.getElementById("columnsInput").value;
+    let desiredRows = document.getElementById("rowsInput").value;
+    let desiredColumns = document.getElementById("columnsInput").value;
 
     //Cycle through and make our 'world' 
-    for (let i = 0;i < rows;i++){
+    for (let i = 0;i < desiredRows;i++){
+        /** @type {Hex[]} */
         let row = [];
-        for (let j = 0; j < columns; j++){
-            row.push(1);
+        for (let j = 0; j < desiredColumns; j++){
+            row.push(new Hex(i, j, -i-j));
         }
         worldMap.push(row);
     }
 
-    //Not sure if we should draw it here. Seems like creating and drawing are different.
-    drawWorld();
+    //Not sure if we should draw it here. Seems like creating and drawing are different responsibilities.
+    drawNewWorld();
 }
 
 //Draw a new map based on what is in the wordMap array
-function drawWorld(){
+function drawNewWorld(){
     clearWorld();
     worldMap.forEach((row, index) => {
         const rowDiv = document.createElement('div');
@@ -44,7 +48,7 @@ function drawWorld(){
         row.forEach(hexagon => {
             const hexagonDiv = document.createElement('div');
             hexagonDiv.className = 'hexagon';
-            hexagonDiv.innerHTML = hexagon; 
+            hexagonDiv.innerHTML = `<div class="hex-info">${hexagon.toString()}</div>`
             rowDiv.appendChild(hexagonDiv);
         });
     
