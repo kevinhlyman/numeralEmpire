@@ -20,11 +20,12 @@ function createWorld()
     let desiredColumns = document.getElementById("columnsInput").value;
 
     //Cycle through and make our 'world' 
-    for (let i = 0;i < desiredRows;i++){
+    for (let r = 0;r < desiredRows;r++){
         /** @type {Hex[]} */
         let row = [];
-        for (let j = 0; j < desiredColumns; j++){
-            row.push(new Hex(i, j, -i-j));
+        for (let q = 0; q < desiredColumns; q++){
+            //row.push(new Hex(i, j, -i-j));
+            row.push(new Hex(q, r, -q-r));
         }
         worldMap.push(row);
     }
@@ -36,19 +37,16 @@ function createWorld()
 //Draw a new map based on what is in the wordMap array
 function drawNewWorld(){
     clearWorld();
-    worldMap.forEach((row, index) => {
+    worldMap.forEach((row, rowIndex) => {
         const rowDiv = document.createElement('div');
-        if (index === 0)
-        {
-            rowDiv.className = `row zero`;
-        }else{
-             rowDiv.className = `row ${index % 2 === 0 ? 'even' : 'odd'}`;
-        }
     
-        row.forEach(hexagon => {
+        row.forEach((hexagon, columnIndex) => {
+            let oddHexCss = columnIndex % 2 ? 'hex-odd': '';
             const hexagonDiv = document.createElement('div');
-            hexagonDiv.className = 'hexagon';
-            hexagonDiv.innerHTML = `<div class="hex-info">${hexagon.toString()}</div>`
+            hexagonDiv.className = `hexagon ${oddHexCss}`;
+            hexagonDiv.setAttribute("rowIndex", rowIndex);
+            hexagonDiv.setAttribute("columnIndex", columnIndex);
+            hexagonDiv.innerHTML = `<div class="hex-info"">${hexagon.toString()}</div>`
             rowDiv.appendChild(hexagonDiv);
         });
     

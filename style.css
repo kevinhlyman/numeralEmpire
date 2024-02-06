@@ -2,17 +2,20 @@
 {
   border:1px solid orange;
   background-color:turquoise;
-  min-width:990px;
+  min-width:600px;
+  display:inline-block;
+  padding-bottom: 45px;
+  padding-right:25px;
 }
 .hexagon {
-  width: 100px; 
+  width: 104px; 
   height: 90px;
   background-color: white;
   /*clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);*/
   clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
   display:inline-block;
-  margin-right:56px;
   cursor: pointer;
+  margin-right:-25px;
   /*border: 1px solid black;/*this will need to be a clip-path too or something*/
 
 }
@@ -21,17 +24,14 @@
   text-align: center;
   /*border:1px solid blue;*/
 }
-.row.odd
+.hex-odd
 {
-  margin-left:156px;
-  margin-top:-44px;
-}
-.row.even
-{
-  margin-top:-44px;
+  position:relative;
+  top:45px;
+  /*right:25px;*/
 }
 .hex-info {
-  width: 50%;
+  text-align: center;
   margin: 25% auto;
-  font-size: 10pt;
+  font-size: 9pt;
 }

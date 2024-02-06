@@ -32,7 +32,7 @@ class Hex {
 
     // String representation of the Hex
     toString() {
-        return `Hex: q:${this.q}, r:${this.r}, s:${this.s}`;
+        return `q:${this.q}, r:${this.r}, s:${this.s}`;
     }
 }
 
