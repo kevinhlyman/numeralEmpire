@@ -1,4 +1,5 @@
 class Hex {
+    #active = false;
     constructor(q, r, s ){
         if (q + r + s !== 0){
             throw new Error("Invalid coordinates.");
@@ -7,6 +8,18 @@ class Hex {
         this.q = q;
         this.r = r;
         this.s = s; // RedBlobGames says you can calculate this as -q-r. If you leave this out then it's called Axial Coordinates instead of Cube Coordinates
+    }
+
+    get active(){
+        return this.#active;
+    }
+
+    // Setter for active
+    /**
+     * @param {boolean} newActive
+     */
+    set active(newActive){
+        this.#active = newActive
     }
 
     // Add another Hex to this one
@@ -20,7 +33,7 @@ class Hex {
     }
 
     // Find the neighboring hex in a specific direction
-    // Directions are from 0 to 5
+    // Directions are from 0 to 5 starting at the 1 O'Clock position
     neighbor(direction) {
         const hexDirections = [
             new Hex(1, -1, 0), new Hex(1, 0, -1), new Hex(0, 1, -1),

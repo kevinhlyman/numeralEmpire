@@ -8,10 +8,16 @@
   </head>
   <body>
     <aside id="menu">
-      <label for="rowsInput">Rows</label>
+      <label for="rowsInput">Rows:</label>
       <input type="number" name="rowsInput" id="rowsInput" value="10"/>
-      <label for="columnsInput">Columns</label>
+      <label for="columnsInput">Columns:</label>
       <input type="number" name="columnsInput" id="columnsInput" value="10"/>
+      <input type="radio" name="typeOfHexagon" id="flatHex" value="flat"/>
+      <label for="flatHex">:Flat Hex</label>
+      <input type="radio" name="typeOfHexagon" id="pointyHex" value="pointy" checked/>
+      <label for="pointyHex">:Pointy Hex</label>
+      <label for="includeCoords">Include Coords:</label>
+      <input type="checkbox" name="includeCoords" id="includeCoords" checked/>
       <button id="btnMakeWorld" type="button">Make it!</button>
     </aside>
     <div id="gameBoard">

@@ -4,10 +4,25 @@
   background-color:turquoise;
   min-width:600px;
   display:inline-block;
-  padding-bottom: 45px;
-  padding-right:25px;
+  padding:45px 25px;
 }
-.hexagon {
+.row-pointy
+{
+  margin-top:-25px;
+}
+.row-pointy-odd
+{
+  margin-left: 45px;
+}
+.hexagon-pointy{
+  height: 104px; 
+  width: 90px;
+  background-color: white;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  display:inline-block;
+  cursor: pointer;
+}
+.hexagon-flat {
   width: 104px; 
   height: 90px;
   background-color: white;
@@ -19,19 +34,37 @@
   /*border: 1px solid black;/*this will need to be a clip-path too or something*/
 
 }
-.row
+.hexagon
 {
-  text-align: center;
-  /*border:1px solid blue;*/
+  transition: background-color 0.3s;
 }
-.hex-odd
+.hexagon-flat-odd
 {
   position:relative;
   top:45px;
-  /*right:25px;*/
 }
 .hex-info {
   text-align: center;
   margin: 25% auto;
   font-size: 9pt;
+}
+.highlighted
+{
+  background-color:lightgoldenrodyellow;
+}
+
+.blinking{
+  animation: blink 1s linear infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50%{
+    opacity: 0;
+  }
+  100%{
+    opacity: 1;
+  }
 }
