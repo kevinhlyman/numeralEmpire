@@ -1,4 +1,6 @@
 import Hex from './Hex.js';
+import { hexTypes } from './HexType.js';
+import { HumanPlayer, ComputerPlayer } from './Player.js';
 
 /** @type {Hex[][]} */
 let worldMap = [];
@@ -18,13 +20,19 @@ btnMakeWorld.addEventListener("click", createWorld);
 function createWorld(){
     //Reset the world and get the rows and columns
     worldMap = [];
+    const players = [
+        new HumanPlayer('Human', 'blue'),
+        new ComputerPlayer('AI-1', 'red'),
+        new ComputerPlayer('AI-2', 'green'),
+        new ComputerPlayer('AI-3', 'yellow')
+      ];
+
     let desiredRows = document.getElementById("rowsInput").value;
     let desiredColumns = document.getElementById("columnsInput").value;
     let left = 0;
     let right = desiredColumns - 1;
     let top = 0;
     let bottom = desiredRows - 1;
-    let flatHex = document.getElementById("flatHex").checked;
 
     // Cycle through and make our 'world' 
     // I think the for loops will need to change based on the hex type, flat or pointy
@@ -34,12 +42,30 @@ function createWorld(){
         let row = [];
         let r_offset = Math.floor(r/2.0);
         for (let q = left - r_offset; q <= right - r_offset; q++){
-            row.push(new Hex(q, r, -q-r));
+            let newHex = new Hex(q, r, -q-r);
+            newHex.hexType = hexTypes.BASIC;
+            row.push(newHex);
         }
         worldMap.push(row);
     }
+
+    // Set starting positions for players
+    worldMap[top][left].playerOwner = players[0];
+    worldMap[top][left].hexType = hexTypes.HOME;
+
+    worldMap[top][right].playerOwner = players[1];
+    worldMap[top][right].hexType = hexTypes.HOME;
+
+    worldMap[bottom][left].playerOwner = players[2];
+    worldMap[bottom][left].hexType = hexTypes.HOME;
+
+    worldMap[bottom][right].playerOwner = players[3];
+    worldMap[bottom][right].hexType = hexTypes.HOME;
+
+
     window.worldMap = worldMap;//this is for debuging so we can get at the structure
     //console.table(worldMap);
+
     //Not sure if we should draw it here. Seems like creating and drawing are different responsibilities.
     drawNewWorld();
 }
@@ -75,7 +101,7 @@ function drawFlatWorld(displayCoords){
             hexagonDiv.setAttribute("rowIndex", rowIndex);
             hexagonDiv.setAttribute("columnIndex", columnIndex);
             if (displayCoords){
-                hexagonDiv.innerHTML = `<div class="hex-info"">${hexagon.toString()}</div>`
+                hexagonDiv.innerHTML = `<div class="hex-info">${hexagon.toString()}</div>`
             }
             rowDiv.appendChild(hexagonDiv);
         });
@@ -101,8 +127,14 @@ function drawPointyWorld(displayCoords){
             hexagonDiv.setAttribute(`s`,hexagon.s);
             hexagonDiv.setAttribute(`rowIndex`, rowIndex);
             hexagonDiv.setAttribute(`columnIndex`, columnIndex);
-            if (displayCoords){
-                hexagonDiv.innerHTML = `<div class="hex-info"">${hexagon.toString()}</div>`
+            if (hexagon.playerOwner){hexagonDiv.style.backgroundColor = hexagon.playerOwner.color}
+            if (displayCoords){hexagonDiv.innerHTML = `<div class="hex-info">${hexagon.toString()}</div>`}
+            if (hexagon.hexType != hexTypes.BASIC){
+                console.log(hexagon.hexType);
+                // Display its type
+                let hexTypeDiv = document.createElement('div');
+                hexTypeDiv.classList.add(hexagon.hexType);
+                hexagonDiv.appendChild(hexTypeDiv);
             }
             rowDiv.appendChild(hexagonDiv);
         });
