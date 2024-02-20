@@ -1,5 +1,10 @@
+import {hexTypes} from './HexType.js';
 class Hex {
     #active = false;
+    #hexType = hexTypes.BASIC;
+    playerOwner = null;
+    soldierCount = 0;
+
     constructor(q, r, s ){
         if (q + r + s !== 0){
             throw new Error("Invalid coordinates.");
@@ -7,7 +12,7 @@ class Hex {
 
         this.q = q;
         this.r = r;
-        this.s = s; // RedBlobGames says you can calculate this as -q-r. If you leave this out then it's called Axial Coordinates instead of Cube Coordinates
+        this.s = s; // RedBlobGames says you can calculate this as -q-r. If you leave this out then it's called Axial Coordinates instead of Cube Coordinates.
     }
 
     get active(){
@@ -20,6 +25,16 @@ class Hex {
      */
     set active(newActive){
         this.#active = newActive
+    }
+
+    get hexType(){
+        //console.log(`Returning HexType of ${this.#hexType}`)
+        return this.#hexType;
+    }
+
+    set hexType(hexType){
+        //console.log(`Setting HexType to ${hexType}`);
+        this.#hexType = hexType;//probably should do some type checking here to make sure it's actually a valid hexType.
     }
 
     // Add another Hex to this one
