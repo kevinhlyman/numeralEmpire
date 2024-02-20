@@ -4,8 +4,10 @@ import { HumanPlayer, ComputerPlayer } from './Player.js';
 
 /** @type {Hex[][]} */
 let worldMap = [];
+let players = [];
+let currentTurn = 0;
 
-document.addEventListener("DOMContentLoaded",function(){
+document.addEventListener('DOMContentLoaded',function(){
     createWorld();
 
 });
@@ -13,22 +15,25 @@ document.addEventListener("DOMContentLoaded",function(){
 
 
 const gameBoard = document.getElementById('gameBoard');
-const btnMakeWorld = document.getElementById("btnMakeWorld");
-btnMakeWorld.addEventListener("click", createWorld);
+const btnMakeWorld = document.getElementById('btnMakeWorld');
+btnMakeWorld.addEventListener('click', createWorld);
+const btnEndTurn = document.getElementById('btnEndTurn');
+btnEndTurn.addEventListener('click', endCurrentPlayerTurn);
 
 //Create a new array of arrays based off of the what the user set in the menu fields
 function createWorld(){
     //Reset the world and get the rows and columns
     worldMap = [];
-    const players = [
-        new HumanPlayer('Human', 'blue'),
-        new ComputerPlayer('AI-1', 'red'),
-        new ComputerPlayer('AI-2', 'green'),
-        new ComputerPlayer('AI-3', 'yellow')
+    currentTurn = 0;
+    players = [
+        new HumanPlayer('Human', 'dodgerblue'),
+        new ComputerPlayer('AI-1', 'firebrick'),
+        new ComputerPlayer('AI-2', 'forestgreen'),
+        new ComputerPlayer('AI-3', 'khaki')
       ];
 
-    let desiredRows = document.getElementById("rowsInput").value;
-    let desiredColumns = document.getElementById("columnsInput").value;
+    let desiredRows = document.getElementById('rowsInput').value;
+    let desiredColumns = document.getElementById('columnsInput').value;
     let left = 0;
     let right = desiredColumns - 1;
     let top = 0;
@@ -43,7 +48,6 @@ function createWorld(){
         let r_offset = Math.floor(r/2.0);
         for (let q = left - r_offset; q <= right - r_offset; q++){
             let newHex = new Hex(q, r, -q-r);
-            newHex.hexType = hexTypes.BASIC;
             row.push(newHex);
         }
         worldMap.push(row);
@@ -62,79 +66,67 @@ function createWorld(){
     worldMap[bottom][right].playerOwner = players[3];
     worldMap[bottom][right].hexType = hexTypes.HOME;
 
+    //this is for debuging so we can get at the structure
+    window.worldMap = worldMap;
+    window.players = players;
+    window.currentTurn = currentTurn;
 
-    window.worldMap = worldMap;//this is for debuging so we can get at the structure
-    //console.table(worldMap);
 
     //Not sure if we should draw it here. Seems like creating and drawing are different responsibilities.
-    drawNewWorld();
+    
+    setCurrentPlayer();
+    calculateCurrentPlayerStorage();
+    drawWorld();
 }
 
 //Draw a new map based on what is in the wordMap array
-function drawNewWorld(){
+function drawWorld(){
     clearWorld();
-    let displayCoords = document.getElementById("includeCoords").checked;
-    if (document.getElementById("flatHex").checked){
-        drawFlatWorld(displayCoords);
-    }
-    else{
-        drawPointyWorld(displayCoords);
-    }
+    drawPointyWorld();
     addEventListenersToHexes();
+    //buildPlayerBoard();
 }
 
-function drawFlatWorld(displayCoords){
-    worldMap.forEach((row, rowIndex) => {
-        const rowDiv = document.createElement('div');
-        rowDiv.classList.add(`row`);
-        row.forEach((hexagon, columnIndex) => {
-            const hexagonDiv = document.createElement('div');
-            hexagonDiv.classList.add(`hexagon`);
-            hexagonDiv.classList.add(`hexagon-flat`);
-            if (columnIndex % 2){
-                hexagonDiv.classList.add(`hexagon-flat-odd`);
-            }
-            if (hexagon.active){hexagonDiv.classList.add('blinking');}
-            hexagonDiv.setAttribute(`q`,hexagon.q);
-            hexagonDiv.setAttribute(`r`,hexagon.r);
-            hexagonDiv.setAttribute(`s`,hexagon.s);
-            hexagonDiv.setAttribute("rowIndex", rowIndex);
-            hexagonDiv.setAttribute("columnIndex", columnIndex);
-            if (displayCoords){
-                hexagonDiv.innerHTML = `<div class="hex-info">${hexagon.toString()}</div>`
-            }
-            rowDiv.appendChild(hexagonDiv);
-        });
-    
-        gameBoard.appendChild(rowDiv);
-    });
-}
+function drawPointyWorld(){
+    let displayCoords = document.getElementById('includeCoords').checked;
 
-function drawPointyWorld(displayCoords){
     worldMap.forEach((row, rowIndex) => {
         const rowDiv = document.createElement('div');
-        rowDiv.classList.add(`row-pointy`);
+        rowDiv.classList.add('row-pointy');
         if (rowIndex % 2){
-            rowDiv.classList.add(`row-pointy-odd`);
+            rowDiv.classList.add('row-pointy-odd');
         }
         row.forEach((hexagon, columnIndex) => {
             const hexagonDiv = document.createElement('div');
-            hexagonDiv.classList.add(`hexagon`);
-            hexagonDiv.classList.add(`hexagon-pointy`);
+            hexagonDiv.classList.add('hexagon');
+            hexagonDiv.classList.add('hexagon-pointy');
             if (hexagon.active){hexagonDiv.classList.add('blinking');}
-            hexagonDiv.setAttribute(`q`,hexagon.q);
-            hexagonDiv.setAttribute(`r`,hexagon.r);
-            hexagonDiv.setAttribute(`s`,hexagon.s);
-            hexagonDiv.setAttribute(`rowIndex`, rowIndex);
-            hexagonDiv.setAttribute(`columnIndex`, columnIndex);
+            hexagonDiv.setAttribute('q',hexagon.q);
+            hexagonDiv.setAttribute('r',hexagon.r);
+            hexagonDiv.setAttribute('s',hexagon.s);
+            hexagonDiv.setAttribute('rowIndex', rowIndex);
+            hexagonDiv.setAttribute('columnIndex', columnIndex);
             if (hexagon.playerOwner){hexagonDiv.style.backgroundColor = hexagon.playerOwner.color}
             if (displayCoords){hexagonDiv.innerHTML = `<div class="hex-info">${hexagon.toString()}</div>`}
             if (hexagon.hexType != hexTypes.BASIC){
-                console.log(hexagon.hexType);
+                //console.log(hexagon.hexType);
                 // Display its type
                 let hexTypeDiv = document.createElement('div');
                 hexTypeDiv.classList.add(hexagon.hexType);
                 hexagonDiv.appendChild(hexTypeDiv);
+                if (hexagon.hexType == hexTypes.HOME){
+                    //Then we want to show the 'storage' here
+                    let hexSoldierDiv = document.createElement('div');
+                    hexSoldierDiv.classList.add('soldier-div');
+                    hexSoldierDiv.innerHTML = hexagon.playerOwner.storage;
+                    hexagonDiv.appendChild(hexSoldierDiv);
+                }
+            }
+            if (hexagon.soldierCount > 0){
+                let hexSoldierDiv = document.createElement('div');
+                hexSoldierDiv.classList.add('soldier-div');
+                hexSoldierDiv.innerHTML = hexagon.soldierCount;
+                hexagonDiv.appendChild(hexSoldierDiv);
             }
             rowDiv.appendChild(hexagonDiv);
         });
@@ -155,7 +147,42 @@ function addEventListenersToHexes(){
             this.classList.remove('highlighted');
         });
 
-        // Make the neighbors blink....or unblink if they're already blinking. I think there's a game of life that's like this or something.
+        div.addEventListener('click', function(){
+            let q = +this.getAttribute('q');
+            let r = +this.getAttribute('r');
+            let theHexInTheWorldMap = worldMap[r][q + Math.floor(r/2.0)];
+
+            //We'll probably need something here to do nothing if the click isn't coming from the current player
+            //right now it's a single player game so if the player is clicking on hexagons while it's the computers turn we don't want anything to happen
+            //haven't tested but I'm pretty sure the human player will be able to force the AI player to make moves by clicking around.
+            let localCP = getCurrentPlayer();
+            if (localCP.storage > 0 && playerOwnsANeighboringHexagon(localCP, theHexInTheWorldMap))
+            {
+                if (theHexInTheWorldMap.playerOwner == localCP){
+                    //add one to the hex soldier count
+                    theHexInTheWorldMap.soldierCount++;
+                    //subtract one from the current players storage
+                    localCP.subtractFromStorage();
+                }else if (theHexInTheWorldMap.playerOwner == null){
+                    //nobody owns it so take it
+                    theHexInTheWorldMap.soldierCount++;
+                    theHexInTheWorldMap.playerOwner = localCP;
+                    //subtract one from the current players storage
+                    localCP.subtractFromStorage();
+                }else if (theHexInTheWorldMap.playerOwner != localCP){
+                    //someone else owns it so attack
+                    //right now we are just going to switch the player owner to the current player
+                    theHexInTheWorldMap.soldierCount = 1;
+                    theHexInTheWorldMap.playerOwner = localCP;
+                    //subtract one from the current players storage
+                    localCP.subtractFromStorage();
+                }
+            }
+            
+            // Redraw. I'm not sure how best to do this yet, so this works for now.
+            drawWorld();
+        });
+/*         // Make the neighbors blink....or unblink if they're already blinking. I think there's a game of life that's like this or something.
         div.addEventListener('click', function(){
             let q = +this.getAttribute('q');
             let r = +this.getAttribute('r');
@@ -179,9 +206,148 @@ function addEventListenersToHexes(){
             }
 
             // Redraw. I'm not sure how best to do this yet, so this works for now.
-            drawNewWorld();
+            drawWorld();
+        }); */
+    });
+}
+
+function setCurrentPlayer(){
+    let pdiv = document.getElementById('currentPlayer');
+    let currentPlayer = getCurrentPlayer();
+    pdiv.innerHTML = currentPlayer.name;
+    pdiv.style.backgroundColor = currentPlayer.color
+}
+
+function calculateCurrentPlayerStorage(){
+    let currentPlayer = getCurrentPlayer();
+    let addToStorage = 0;
+    let subtractFromStorage = 0.0;
+
+    worldMap.forEach((row) => {
+        row.forEach((hexagon) => {
+            if (hexagon.playerOwner == currentPlayer){
+                addToStorage++;
+                if (hexagon.soldierCount > 0){
+                    subtractFromStorage += hexagon.soldierCount / 2.0;
+                }
+            }
         });
     });
+
+    currentPlayer.addToStorage(addToStorage);
+    currentPlayer.subtractFromStorage(Math.floor(subtractFromStorage));
+
+}
+
+function endCurrentPlayerTurn(){
+    console.log('Ending current player turn');
+    increaseCurrentTurn();
+    setCurrentPlayer();
+    calculateCurrentPlayerStorage();
+    drawWorld();
+
+    if (getCurrentPlayer() instanceof ComputerPlayer){
+        setTimeout(function(){
+            //Waiting 1 second so the player can see the computers "play"
+            computerPlayerLoop();
+        }, 1000);
+        
+    }
+}
+
+function getCurrentPlayer(){
+    return players[getCurrentTurn() % getPlayerCount()];
+}
+
+function getPlayerCount(){
+    return players.length;
+}
+
+function getCurrentTurn(){
+    return currentTurn;
+}
+
+function increaseCurrentTurn(){
+    currentTurn++;
+}
+
+function buildPlayerBoard(){
+    let playerBoard = document.getElementById('playerBoard');
+    playerBoard.innerHTML = "";
+    players.forEach((player) => {
+        let pDiv = document.createElement('div');
+        pDiv.innerHTML = `<div>${player.name} : <span style="display:inline-block;background-color:${player.color};padding:2px;">${player.storage}</span></div>`;
+        playerBoard.appendChild(pDiv);
+    });
+}
+
+function computerPlayerLoop(){
+    console.log('A computer player is playing');
+    let currentPlayer = getCurrentPlayer();
+    let playerOwnedHexes = [];
+
+    // Get a list of owned hexes by the player
+    worldMap.forEach((row) => {
+        row.forEach((hexagon) => {
+            if (hexagon.playerOwner == currentPlayer){
+                playerOwnedHexes.push(hexagon);
+            }
+        });
+    });
+
+    // see if they have anything in storage to use
+    let maxTurns = 4; // For now a safety mechanism so this loop don't run away wild
+    while (currentPlayer.storage > 0 && maxTurns > 0){
+        console.log(currentPlayer.storage);
+        // find a hex that has a neighbor with an unowned hex and put a soldier in it
+        playerOwnedHexes.forEach((hexagon) => {
+            for(let h = 0; h < 6; h++){
+                let nayb = hexagon.neighbor(h);
+
+                // For now this will work but we should make a map or world class and encapsulate all this type of stuff
+                if (worldMap[nayb.r] != null){// Stay inside the bounds
+                    let naybInHexWorldMap = worldMap[nayb.r][nayb.q + Math.floor(nayb.r/2.0)];
+                    if (naybInHexWorldMap != null){
+                        if(naybInHexWorldMap.playerOwner == null){
+                            // make sure we have something in storage to use
+                            if (currentPlayer.storage > 0){
+                                // take it and turn down the storage by 1
+                                naybInHexWorldMap.playerOwner = currentPlayer;
+                                naybInHexWorldMap.soldierCount = 1;
+                                currentPlayer.subtractFromStorage();
+                            }
+                        }
+                    }
+                }
+
+                // this probably isn't the correct place to put this but just for now.
+                drawWorld();
+                
+            }
+        });
+
+        maxTurns--;
+    }
+
+    endCurrentPlayerTurn();
+}
+
+
+function playerOwnsANeighboringHexagon(player, hexagon){
+    for(let h = 0; h < 6; h++){
+        let nayb = hexagon.neighbor(h);
+
+        // For now this will work but we should make a map or world class and encapsulate all this type of stuff
+        if (worldMap[nayb.r] != null){// Stay inside the bounds
+            let naybInHexWorldMap = worldMap[nayb.r][nayb.q + Math.floor(nayb.r/2.0)];
+            if (naybInHexWorldMap != null){
+                if(naybInHexWorldMap.playerOwner == player){
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 //This just clears the gameBoard div
