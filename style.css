@@ -81,6 +81,8 @@
   color: white;
   transform: translate(-50%, -50%);
   width: 50%;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* .ocean {
