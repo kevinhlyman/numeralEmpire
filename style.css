@@ -1,31 +1,54 @@
-#gameBoard
-{
-  border:1px solid orange;
-  background-color:turquoise;
-  min-width:600px;
-  display:inline-block;
-  padding:45px 25px;
+@import './reset.css';
+
+:root {
+  --map-background: #40e0d0;
+  --map-border: #ffa500;
+  --empty-hex: #ffffff;
+  --empty-hex-hover: #fafad2;
+  --soldier-count: #ffffff;
+  --player1-background: #1e90ff;
+  --player2-background: firebrick;
+  --player3-background: forestgreen;
+  --player4-background: khaki;
 }
-.row-pointy
-{
-  margin-top:-29px;
+
+/* Don't need this.. Just keeps game board centered if you wanna. Maybe to build on later */
+body {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
 }
-.row-pointy-odd
-{
+
+#menu {
+  margin-top: 20px;
+}
+
+#gameBoard {
+  border: 1px solid var(--map-border);
+  background-color: var(--map-background);
+  min-width: 600px;
+  display: inline-block;
+  padding: 45px 25px;
+  margin-top: 20px;
+}
+.row-pointy {
+  margin-top: -29px;
+}
+.row-pointy-odd {
   margin-left: 45px;
 }
-.hexagon-pointy{
-  height: 104px; 
+.hexagon-pointy {
+  height: 104px;
   width: 90px;
-  background-color: white;
+  background-color: var(--empty-hex);
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  display:inline-block;
+  display: inline-block;
   cursor: pointer;
   margin-right: 1px;
 }
-.hexagon
-{
-  position:relative;
+.hexagon {
+  position: relative;
   transition: background-color 0.3s;
   overflow: hidden;
   z-index: 2;
@@ -35,12 +58,11 @@
   margin: 25% auto;
   font-size: 9pt;
 }
-.highlighted
-{
-  background-color:lightgoldenrodyellow;
+.highlighted {
+  background-color: var(--empty-hex-hover);
 }
 
-.blinking{
+.blinking {
   animation: blink 1s linear infinite;
 }
 
@@ -48,27 +70,27 @@
   0% {
     opacity: 1;
   }
-  50%{
+  50% {
     opacity: 0;
   }
-  100%{
+  100% {
     opacity: 1;
   }
 }
 
-.Home{
-  position:absolute;
-  top:22%;
-  left:22%;
-  width:50px;
-  height:50px;
+.Home {
+  position: absolute;
+  top: 22%;
+  left: 22%;
+  width: 50px;
+  height: 50px;
   /*background-image: url('data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2020%2020%22%20width=%2220%22%20height=%2215%22%3E%3Cpolygon%20points=%220,15%200,10%2010,0%2020,10%2020,15%20%22%20style=%22fill:black;stroke:black;stroke-width:1;%22%3E%3C/polygon%3E%3C/svg%3E');*/
-  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50"><polygon points="0,50 0,25 25,0 50,25 50,50 " style="fill:black;stroke:black;stroke-width:1;"></polygon></svg>')
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50"><polygon points="0,50 0,25 25,0 50,25 50,50 " style="fill:black;stroke:black;stroke-width:1;"></polygon></svg>');
 }
 
-#currentPlayer{
-  display:inline-block;
-  padding:.3em;
+#currentPlayer {
+  display: inline-block;
+  padding: 0.3em;
 }
 
 .soldier-div {
@@ -78,7 +100,7 @@
   left: 50%;
   font-size: 22pt;
   font-weight: bold;
-  color: white;
+  color: var(--soldier-count);
   transform: translate(-50%, -50%);
   width: 50%;
   -webkit-user-select: none;
