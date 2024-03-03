@@ -7,26 +7,28 @@
     <script type="module" src="index.js" defer></script>
   </head>
   <body>
-    <aside id="menu">
-      <div>
-        <label for="rowsInput">Rows:</label>
-        <input type="number" name="rowsInput" id="rowsInput" value="10"/>
-        <label for="columnsInput">Columns:</label>
-        <input type="number" name="columnsInput" id="columnsInput" value="10"/>
-        <label for="includeCoords">Include Coords:</label>
-        <input type="checkbox" name="includeCoords" id="includeCoords"/>
-        <button id="btnMakeWorld" type="button">Make it!</button>
+    <div>
+      <aside id="menu">
+        <div>
+          <label for="rowsInput">Rows:</label>
+          <input type="number" name="rowsInput" id="rowsInput" value="10"/>
+          <label for="columnsInput">Columns:</label>
+          <input type="number" name="columnsInput" id="columnsInput" value="10"/>
+          <label for="includeCoords">Include Coords:</label>
+          <input type="checkbox" name="includeCoords" id="includeCoords"/>
+          <button id="btnMakeWorld" type="button">Make it!</button>
+        </div>
+        <div>
+          <label>Current Player:</label>
+          <div id="currentPlayer"></div>
+          <button id="btnEndTurn" type="button">End Turn</button>
+        </div>
+        <div id="playerBoard">
+          
+        </div>
+      </aside>
+      <div id="gameBoard" class="ocean">
       </div>
-      <div>
-        <label>Current Player:</label>
-        <div id="currentPlayer"></div>
-        <button id="btnEndTurn" type="button">End Turn</button>
-      </div>
-      <div id="playerBoard">
-
-      </div>
-    </aside>
-    <div id="gameBoard" class="ocean">
     </div>
   </body>
 </html>

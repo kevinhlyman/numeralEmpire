@@ -26,10 +26,10 @@ function createWorld(){
     worldMap = [];
     currentTurn = 0;
     players = [
-        new HumanPlayer('Human', 'dodgerblue'),
-        new ComputerPlayer('AI-1', 'firebrick'),
-        new ComputerPlayer('AI-2', 'forestgreen'),
-        new ComputerPlayer('AI-3', 'khaki')
+        new HumanPlayer('Human', 'var(--player1-background)'),
+        new ComputerPlayer('AI-1', 'var(--player2-background)'),
+        new ComputerPlayer('AI-2', 'var(--player3-background)'),
+        new ComputerPlayer('AI-3', 'var(--player4-background)')
       ];
 
     let desiredRows = document.getElementById('rowsInput').value;
