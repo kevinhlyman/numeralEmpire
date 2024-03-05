@@ -296,7 +296,7 @@ function computerPlayerLoop(){
     });
 
     // see if they have anything in storage to use
-    let maxTurns = 4; // For now a safety mechanism so this loop don't run away wild
+    let maxTurns = 10; // For now a safety mechanism so this loop don't run away wild
     while (currentPlayer.storage > 0 && maxTurns > 0){
         console.log(currentPlayer.storage);
         // find a hex that has a neighbor with an unowned hex and put a soldier in it
@@ -318,12 +318,11 @@ function computerPlayerLoop(){
                             }
                         }
                     }
-                }
-
-                // this probably isn't the correct place to put this but just for now.
-                drawWorld();
-                
+                }  
             }
+            
+            // this probably isn't the correct place to put this but just for now.
+            drawWorld();
         });
 
         maxTurns--;

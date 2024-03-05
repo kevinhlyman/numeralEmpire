@@ -1,8 +1,8 @@
 @import './reset.css';
 
 :root {
-  --map-background: #40e0d0;
-  --map-border: #ffa500;
+  --menu-background:#ffffff;
+  --ocean-background: #40e0d0;
   --empty-hex: #ffffff;
   --empty-hex-hover: #fafad2;
   --soldier-count: #ffffff;
@@ -12,7 +12,10 @@
   --player4-background: khaki;
 }
 
-/* Don't need this.. Just keeps game board centered if you wanna. Maybe to build on later */
+html{
+  background-color: var(--ocean-background);
+}
+
 body {
   display: flex;
   justify-content: center;
@@ -21,12 +24,27 @@ body {
 }
 
 #menu {
-  margin-top: 20px;
+  margin-top: 5px;
+  padding: 20px;
+  background-color: var(--menu-background);
+  border-radius: 10px;
+  box-shadow: #666666 7px 7px 10px;
+}
+#btnMakeWorld{
+  padding:10px;
+  background-color: darkblue;
+  color:white;
+  border-radius: 10px;
+}
+#btnEndTurn{
+  float: right;
+  padding: 10px;
+  background-color: green;
+  color: white;
+  border-radius: 10px;
 }
 
 #gameBoard {
-  border: 1px solid var(--map-border);
-  background-color: var(--map-background);
   min-width: 600px;
   display: inline-block;
   padding: 45px 25px;
