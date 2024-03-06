@@ -322,7 +322,7 @@ function computerPlayerLoop(){
                 if (worldMap[nayb.r] != null){// Stay inside the bounds
                     let naybInHexWorldMap = worldMap[nayb.r][nayb.q + Math.floor(nayb.r/2.0)];
                     if (naybInHexWorldMap != null){
-                        if(naybInHexWorldMap.playerOwner == null){
+                        if(naybInHexWorldMap.playerOwner != currentPlayer){
                             // make sure we have something in storage to use
                             if (currentPlayer.storage > 0){
                                 // take it and turn down the storage by 1
