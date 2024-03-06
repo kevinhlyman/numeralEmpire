@@ -1,6 +1,6 @@
 import Hex from './Hex.js';
 import { hexTypes } from './HexType.js';
-import { HumanPlayer, ComputerPlayer } from './Player.js';
+import { Player, HumanPlayer, ComputerPlayer } from './Player.js';
 
 /** @type {Hex[][]} */
 let worldMap = [];
@@ -108,12 +108,19 @@ function drawPointyWorld(){
             hexagonDiv.setAttribute('columnIndex', columnIndex);
             if (hexagon.playerOwner){hexagonDiv.style.backgroundColor = hexagon.playerOwner.color}
             if (displayCoords){hexagonDiv.innerHTML = `<div class="hex-info">${hexagon.toString()}</div>`}
-            if (hexagon.hexType != hexTypes.BASIC){
-                //console.log(hexagon.hexType);
+            if (hexagon.hexType == hexTypes.BASIC){
+                if (hexagon.soldierCount > 0){
+                    let hexSoldierDiv = document.createElement('div');
+                    hexSoldierDiv.classList.add('soldier-div');
+                    hexSoldierDiv.innerHTML = hexagon.soldierCount;
+                    hexagonDiv.appendChild(hexSoldierDiv);
+                }
+            }else{
                 // Display its type
                 let hexTypeDiv = document.createElement('div');
                 hexTypeDiv.classList.add(hexagon.hexType);
                 hexagonDiv.appendChild(hexTypeDiv);
+                
                 if (hexagon.hexType == hexTypes.HOME){
                     //Then we want to show the 'storage' here
                     let hexSoldierDiv = document.createElement('div');
@@ -122,12 +129,7 @@ function drawPointyWorld(){
                     hexagonDiv.appendChild(hexSoldierDiv);
                 }
             }
-            if (hexagon.soldierCount > 0){
-                let hexSoldierDiv = document.createElement('div');
-                hexSoldierDiv.classList.add('soldier-div');
-                hexSoldierDiv.innerHTML = hexagon.soldierCount;
-                hexagonDiv.appendChild(hexSoldierDiv);
-            }
+            
             rowDiv.appendChild(hexagonDiv);
         });
     
@@ -159,23 +161,35 @@ function addEventListenersToHexes(){
             if (localCP.storage > 0 && playerOwnsANeighboringHexagon(localCP, theHexInTheWorldMap))
             {
                 if (theHexInTheWorldMap.playerOwner == localCP){
-                    //add one to the hex soldier count
+                    // Add one to the hex soldier count.
                     theHexInTheWorldMap.soldierCount++;
-                    //subtract one from the current players storage
+                    // Subtract one from the current players storage.
                     localCP.subtractFromStorage();
                 }else if (theHexInTheWorldMap.playerOwner == null){
-                    //nobody owns it so take it
+                    // Nobody owns it so take it.
                     theHexInTheWorldMap.soldierCount++;
                     theHexInTheWorldMap.playerOwner = localCP;
-                    //subtract one from the current players storage
+                    // Subtract one from the current players storage.
                     localCP.subtractFromStorage();
                 }else if (theHexInTheWorldMap.playerOwner != localCP){
-                    //someone else owns it so attack
-                    //right now we are just going to switch the player owner to the current player
+                    // Someone else owns it so attack.
+                    // Right now we are just going to switch the player owner to the current player.
                     theHexInTheWorldMap.soldierCount = 1;
+                    let oldOwner = theHexInTheWorldMap.playerOwner; // Track who used to own it for a check later on.
+                    let oldHexType = theHexInTheWorldMap.hexType; // Track what it used to be for a check later on.
                     theHexInTheWorldMap.playerOwner = localCP;
-                    //subtract one from the current players storage
+                    theHexInTheWorldMap.hexType = hexTypes.BASIC; // Taking over a hex resets it to a basic regardless of what it was.
+                    // Subtract one from the current players storage.
                     localCP.subtractFromStorage();
+                    // If it was a home then we need to set the home of that old owner to some other hex they own.
+                    if (oldHexType == hexTypes.HOME){
+                        let playerHexes = findAllHexesForPlayer(oldOwner);
+                        if (playerHexes.length > 0){
+                            // For now randomly select a hex to make the home.
+                            let newHomeHex = playerHexes[Math.floor(Math.random() * 2)];
+                            newHomeHex.hexType = hexTypes.HOME;
+                        }
+                    }
                 }
             }
             
@@ -240,7 +254,7 @@ function calculateCurrentPlayerStorage(){
 }
 
 function endCurrentPlayerTurn(){
-    console.log('Ending current player turn');
+    console.log(`Ending player ${getCurrentPlayer().name} turn`);
     increaseCurrentTurn();
     setCurrentPlayer();
     calculateCurrentPlayerStorage();
@@ -248,7 +262,7 @@ function endCurrentPlayerTurn(){
 
     if (getCurrentPlayer() instanceof ComputerPlayer){
         setTimeout(function(){
-            //Waiting 1 second so the player can see the computers "play"
+            // Waiting 1 second so the player can see the computers "play".
             computerPlayerLoop();
         }, 1000);
         
@@ -282,7 +296,7 @@ function buildPlayerBoard(){
 }
 
 function computerPlayerLoop(){
-    console.log('A computer player is playing');
+    console.log(`Computer player ${getCurrentPlayer().name} is playing`);
     let currentPlayer = getCurrentPlayer();
     let playerOwnedHexes = [];
 
@@ -347,6 +361,28 @@ function playerOwnsANeighboringHexagon(player, hexagon){
         }
     }
     return false;
+}
+
+/**
+ * This function takes a player and returns a list of hexes they own.
+ *
+ * @param {Player} player The player whos hexes we want to know.
+ * @returns {Hex[]} An array of Hex tiles owned by the player.
+ */
+function findAllHexesForPlayer(player){
+    // I think later on we'll probably want to just keep track of this as things go instead of trying to calculate it every time.
+
+    // For now just loop through the world 1 by 1 and find all the hexes that belong to this player.
+    let playerHexes = [];
+    // This is a definite place for optimization
+    worldMap.forEach((row) => {
+        row.forEach((hexagon) => {
+            if (hexagon.playerOwner == player){
+                playerHexes.push(hexagon);
+            }
+        });
+    });
+    return playerHexes;
 }
 
 //This just clears the gameBoard div

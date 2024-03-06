@@ -30,4 +30,4 @@ class ComputerPlayer extends Player{
     
 }
 
-export {HumanPlayer, ComputerPlayer}
+export {Player, HumanPlayer, ComputerPlayer}
