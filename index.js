@@ -9,10 +9,7 @@ let currentTurn = 0;
 
 document.addEventListener('DOMContentLoaded',function(){
     createWorld();
-
 });
-
-
 
 const gameBoard = document.getElementById('gameBoard');
 const btnMakeWorld = document.getElementById('btnMakeWorld');
@@ -76,6 +73,8 @@ function createWorld(){
     
     setCurrentPlayer();
     calculateCurrentPlayerStorage();
+    displayCurrentRound();
+    displayCurrentPhase();
     drawWorld();
 }
 
@@ -232,6 +231,27 @@ function setCurrentPlayer(){
     pdiv.style.backgroundColor = currentPlayer.color
 }
 
+function getCurrentRound(){
+    return Math.floor(currentTurn / (players.length * 2)) + 1;
+}
+
+function displayCurrentRound(){
+    let tdiv = document.getElementById('currentTurn');
+    tdiv.innerHTML = currentTurn;
+    let rdiv = document.getElementById('currentRound');
+    let displayRound = getCurrentRound();
+    rdiv.innerHTML = displayRound;
+}
+
+function displayCurrentPhase(){
+    let phdiv = document.getElementById('currentPhase');
+    if (getCurrentRound() % 2 === 0){
+        phdiv.innerHTML = 'Attacking';
+    }else{
+        phdiv.innerHTML = 'Placing';
+    }
+}
+
 function calculateCurrentPlayerStorage(){
     let currentPlayer = getCurrentPlayer();
     let addToStorage = 0;
@@ -257,6 +277,8 @@ function endCurrentPlayerTurn(){
     console.log(`Ending player ${getCurrentPlayer().name} turn`);
     increaseCurrentTurn();
     setCurrentPlayer();
+    displayCurrentRound();
+    displayCurrentPhase();
     calculateCurrentPlayerStorage();
     drawWorld();
 
