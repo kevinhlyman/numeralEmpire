@@ -73,6 +73,7 @@ function createWorld(){
     
     setCurrentPlayer();
     calculateCurrentPlayerStorage();
+    displayCurrentTurn();
     displayCurrentRound();
     displayCurrentPhase();
     drawWorld();
@@ -231,24 +232,32 @@ function setCurrentPlayer(){
     pdiv.style.backgroundColor = currentPlayer.color
 }
 
+function getCurrentTurn(){
+    return currentTurn;
+}
+
 function getCurrentRound(){
     return Math.floor(currentTurn / (players.length * 2)) + 1;
 }
 
-function displayCurrentRound(){
+function displayCurrentTurn(){
     let tdiv = document.getElementById('currentTurn');
     tdiv.innerHTML = currentTurn;
+
+}
+function displayCurrentRound(){
     let rdiv = document.getElementById('currentRound');
-    let displayRound = getCurrentRound();
-    rdiv.innerHTML = displayRound;
+    rdiv.innerHTML  = getCurrentRound();
 }
 
 function displayCurrentPhase(){
     let phdiv = document.getElementById('currentPhase');
-    if (getCurrentRound() % 2 === 0){
-        phdiv.innerHTML = 'Attacking';
-    }else{
+    let currentPhase = (currentTurn % (players.length * 2)) < players.length ? 1 : 2;
+    
+    if (currentPhase === 1){
         phdiv.innerHTML = 'Placing';
+    }else{
+        phdiv.innerHTML = 'Attacking';
     }
 }
 
@@ -277,6 +286,7 @@ function endCurrentPlayerTurn(){
     console.log(`Ending player ${getCurrentPlayer().name} turn`);
     increaseCurrentTurn();
     setCurrentPlayer();
+    displayCurrentTurn()
     displayCurrentRound();
     displayCurrentPhase();
     calculateCurrentPlayerStorage();
@@ -297,10 +307,6 @@ function getCurrentPlayer(){
 
 function getPlayerCount(){
     return players.length;
-}
-
-function getCurrentTurn(){
-    return currentTurn;
 }
 
 function increaseCurrentTurn(){
