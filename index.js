@@ -165,14 +165,34 @@ function addEventListenersToHexes(){
                 // We are in the attacking phase.
                 if (theHexInTheWorldMap.playerOwner == localCP){
                     // We need to highlight/unhighlight the hex to show it is selected or not selected.
+                    
                     if (theHexInTheWorldMap.active){
-                        theHexInTheWorldMap.active = false;
+                        // This is the currently selected hex so they're de-selecting it.
                         unsetActiveHex();
                     }else{
-                        theHexInTheWorldMap.active = true;
-                        setActiveHex(theHexInTheWorldMap);
+                        if (activeHex === null){
+                            // There is no active hex so make this one the active hex.
+                            setActiveHex(theHexInTheWorldMap);
+                        }else{
+                            // There is an active hex and it's not the one they clicked so move the soldiers from the active hex to this hex
+                            let localSoldierCount = 0;
+                            if (activeHex.hexType == hexTypes.HOME)
+                            {
+                                // There won't be a soldier count. It uses the storage
+                                localSoldierCount = activeHex.playerOwner.storage;
+                                activeHex.playerOwner.zeroStorage();
+                            }else{
+                                localSoldierCount = activeHex.soldierCount;
+                                activeHex.soldierCount = 0;
+                            }
+        
+                            theHexInTheWorldMap.soldierCount += localSoldierCount;
+        
+                            // Unset the active hex
+                            unsetActiveHex();
+                        }
                     }
-                }else if(theHexInTheWorldMap.playerOwner === null){
+                }else if(activeHex !== null && theHexInTheWorldMap.playerOwner === null){
                     // Nobody owns it so take it.
                     let localSoldierCount = 0;
                     if (activeHex.hexType == hexTypes.HOME)
@@ -189,92 +209,58 @@ function addEventListenersToHexes(){
                     theHexInTheWorldMap.playerOwner = localCP;
 
                     // Unset the active hex
-                    activeHex.active = false;
+                    unsetActiveHex();
+                }else if(activeHex !== null && theHexInTheWorldMap.playerOwner !== null){
+                    // Another player owns the hex so do some attacking math
+                    let activeArmy = activeHex.soldierCount; // This will need the Home check too.
+                    let enemyArmy = theHexInTheWorldMap.soldierCount; // This will need the Home check too.
+                    // This is not the correct way to do this but it's how it's being done right now until I write a method to 'combine' hexegons
+                    if (activeArmy > enemyArmy){
+                        // The active army wins
+                        let leftOverArmy = activeArmy - enemyArmy;
+                        activeHex.soldierCount = 0;
+                        theHexInTheWorldMap.soldierCount = leftOverArmy;
+                        theHexInTheWorldMap.playerOwner = localCP;
+                    }else if (activeArmy === enemyArmy){
+                        // They tied, everyone dies.... ;(
+                        activeHex.soldierCount = 0; // This will need the Home check too.
+                        theHexInTheWorldMap.soldierCount = 0; // This will need the Home check too.
+                    }else if (activeArmy < enemyArmy){
+                        // The active army dies
+                        let leftOverArmy = activeArmy - enemyArmy;
+                        activeHex.soldierCount = 0;
+                        theHexInTheWorldMap.soldierCount = enemyArmy - activeArmy; // This will need the Home check too.
+                    }
+                    
+                    unsetActiveHex();
                 }
             }else{
                 // We are in the placing phase.
                 if (theHexInTheWorldMap.playerOwner == localCP){
+                    if(localCP.storage > 0){
                     // Add one to the hex soldier count.
                     theHexInTheWorldMap.soldierCount++;
                     // Subtract one from the current players storage.
                     localCP.subtractFromStorage();
-                }
-            }
-/*
-            if (localCP.storage > 0 && playerOwnsANeighboringHexagon(localCP, theHexInTheWorldMap))
-            {
-                
-                if (theHexInTheWorldMap.playerOwner == localCP){
-                    // Add one to the hex soldier count.
-                    theHexInTheWorldMap.soldierCount++;
-                    // Subtract one from the current players storage.
-                    localCP.subtractFromStorage();
-                }else if (theHexInTheWorldMap.playerOwner == null){
-                    // Nobody owns it so take it.
-                    theHexInTheWorldMap.soldierCount++;
-                    theHexInTheWorldMap.playerOwner = localCP;
-                    // Subtract one from the current players storage.
-                    localCP.subtractFromStorage();
-                }else if (theHexInTheWorldMap.playerOwner != localCP){
-                    // Someone else owns it so attack.
-                    // Right now we are just going to switch the player owner to the current player.
-                    theHexInTheWorldMap.soldierCount = 1;
-                    let oldOwner = theHexInTheWorldMap.playerOwner; // Track who used to own it for a check later on.
-                    let oldHexType = theHexInTheWorldMap.hexType; // Track what it used to be for a check later on.
-                    theHexInTheWorldMap.playerOwner = localCP;
-                    theHexInTheWorldMap.hexType = hexTypes.BASIC; // Taking over a hex resets it to a basic regardless of what it was.
-                    // Subtract one from the current players storage.
-                    localCP.subtractFromStorage();
-                    // If it was a home then we need to set the home of that old owner to some other hex they own.
-                    if (oldHexType == hexTypes.HOME){
-                        let playerHexes = findAllHexesForPlayer(oldOwner);
-                        if (playerHexes.length > 0){
-                            // For now randomly select a hex to make the home.
-                            let newHomeHex = playerHexes[Math.floor(Math.random() * 2)];
-                            newHomeHex.hexType = hexTypes.HOME;
-                        }
                     }
                 }
-            }*/
-            
+            }
             // Redraw. I'm not sure how best to do this yet, so this works for now.
             drawWorld();
         });
-/*         // Make the neighbors blink....or unblink if they're already blinking. I think there's a game of life that's like this or something.
-        div.addEventListener('click', function(){
-            let q = +this.getAttribute('q');
-            let r = +this.getAttribute('r');
-            //console.log(this);
-            
-            let theHexInTheWorldMap = worldMap[r][q + Math.floor(r/2.0)];
-            //theHexInTheWorldMap.active = !theHexInTheWorldMap.active;
-
-            // Make the naybs blink
-            for(let h = 0; h < 6; h++){
-                let nayb = theHexInTheWorldMap.neighbor(h);
-
-                // For now this will work but we should make a map or world class and encapsulate all this type of stuff
-                if (worldMap[nayb.r] != null){// Stay inside the bounds
-                    let naybInHexWorldMap = worldMap[nayb.r][nayb.q + Math.floor(nayb.r/2.0)];
-                    if (naybInHexWorldMap != null){
-                        naybInHexWorldMap.active = !naybInHexWorldMap.active;
-                    }
-                }
-                
-            }
-
-            // Redraw. I'm not sure how best to do this yet, so this works for now.
-            drawWorld();
-        }); */
     });
 }
 
 function setActiveHex(hexagon){
+    hexagon.active = true;
     activeHex = hexagon;
 }
 
-function unsetActiveHex(hexagon){
-    activeHex = null;
+function unsetActiveHex(){
+    if(activeHex !== null){
+        activeHex.active = false;
+        activeHex = null;
+    }
 }
 
 function displayCurrentPlayer(){
@@ -296,9 +282,9 @@ function getCurrentPhase(){
     let currentPhase = (currentTurn % (players.length * 2)) < players.length ? 1 : 2;
     
     if (currentPhase === 1){
-        return 'Attacking';
-    }else{
         return 'Placing';
+    }else{
+        return 'Attacking';
     }
 }
 
@@ -318,24 +304,26 @@ function displayCurrentPhase(){
 }
 
 function calculateCurrentPlayerStorage(){
-    let currentPlayer = getCurrentPlayer();
-    let addToStorage = 0;
-    let subtractFromStorage = 0.0;
-
-    worldMap.forEach((row) => {
-        row.forEach((hexagon) => {
-            if (hexagon.playerOwner == currentPlayer){
-                addToStorage++;
-                if (hexagon.soldierCount > 0){
-                    subtractFromStorage += hexagon.soldierCount / 2.0;
+    // We only do this on the Placing phase
+    if (getCurrentPhase() === 'Placing'){
+        let currentPlayer = getCurrentPlayer();
+        let addToStorage = 0;
+        let subtractFromStorage = 0.0;
+    
+        worldMap.forEach((row) => {
+            row.forEach((hexagon) => {
+                if (hexagon.playerOwner == currentPlayer){
+                    addToStorage++;
+                    if (hexagon.soldierCount > 0){
+                        subtractFromStorage += hexagon.soldierCount / 2.0;
+                    }
                 }
-            }
+            });
         });
-    });
-
-    currentPlayer.addToStorage(addToStorage);
-    currentPlayer.subtractFromStorage(Math.floor(subtractFromStorage));
-
+    
+        currentPlayer.addToStorage(addToStorage);
+        currentPlayer.subtractFromStorage(Math.floor(subtractFromStorage));
+    }
 }
 
 function endCurrentPlayerTurn(){
