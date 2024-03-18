@@ -14,6 +14,10 @@ class Player{
         console.log(`Subtracting ${amount} from storage`);
         this.storage -= amount;
     }
+    zeroStorage(){
+        console.log(`Setting storage to 0`);
+        this.storage = 0;
+    }
 }
 
 class HumanPlayer extends Player{

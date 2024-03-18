@@ -80,7 +80,7 @@ body {
   background-color: var(--empty-hex-hover);
 }
 
-.blinking {
+.hexagon-selected {
   animation: blink 1s linear infinite;
 }
 

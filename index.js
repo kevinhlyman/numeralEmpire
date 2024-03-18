@@ -6,6 +6,7 @@ import { Player, HumanPlayer, ComputerPlayer } from './Player.js';
 let worldMap = [];
 let players = [];
 let currentTurn = 0;
+let activeHex = null;
 
 document.addEventListener('DOMContentLoaded',function(){
     createWorld();
@@ -71,7 +72,7 @@ function createWorld(){
 
     //Not sure if we should draw it here. Seems like creating and drawing are different responsibilities.
     
-    setCurrentPlayer();
+    displayCurrentPlayer();
     calculateCurrentPlayerStorage();
     displayCurrentTurn();
     displayCurrentRound();
@@ -84,7 +85,6 @@ function drawWorld(){
     clearWorld();
     drawPointyWorld();
     addEventListenersToHexes();
-    //buildPlayerBoard();
 }
 
 function drawPointyWorld(){
@@ -100,7 +100,7 @@ function drawPointyWorld(){
             const hexagonDiv = document.createElement('div');
             hexagonDiv.classList.add('hexagon');
             hexagonDiv.classList.add('hexagon-pointy');
-            if (hexagon.active){hexagonDiv.classList.add('blinking');}
+            if (hexagon.active){hexagonDiv.classList.add('hexagon-selected');}
             hexagonDiv.setAttribute('q',hexagon.q);
             hexagonDiv.setAttribute('r',hexagon.r);
             hexagonDiv.setAttribute('s',hexagon.s);
@@ -150,6 +150,7 @@ function addEventListenersToHexes(){
         });
 
         div.addEventListener('click', function(){
+            console.log('Clicked a hexagon');
             let q = +this.getAttribute('q');
             let r = +this.getAttribute('r');
             let theHexInTheWorldMap = worldMap[r][q + Math.floor(r/2.0)];
@@ -158,8 +159,51 @@ function addEventListenersToHexes(){
             //right now it's a single player game so if the player is clicking on hexagons while it's the computers turn we don't want anything to happen
             //haven't tested but I'm pretty sure the human player will be able to force the AI player to make moves by clicking around.
             let localCP = getCurrentPlayer();
+
+            // We need to know what phase we're in to know how to respond.
+            if (getCurrentPhase() === 'Attacking'){
+                // We are in the attacking phase.
+                if (theHexInTheWorldMap.playerOwner == localCP){
+                    // We need to highlight/unhighlight the hex to show it is selected or not selected.
+                    if (theHexInTheWorldMap.active){
+                        theHexInTheWorldMap.active = false;
+                        unsetActiveHex();
+                    }else{
+                        theHexInTheWorldMap.active = true;
+                        setActiveHex(theHexInTheWorldMap);
+                    }
+                }else if(theHexInTheWorldMap.playerOwner === null){
+                    // Nobody owns it so take it.
+                    let localSoldierCount = 0;
+                    if (activeHex.hexType == hexTypes.HOME)
+                    {
+                        // There won't be a soldier count. It uses the storage
+                        localSoldierCount = activeHex.playerOwner.storage;
+                        activeHex.playerOwner.zeroStorage();
+                    }else{
+                        localSoldierCount = activeHex.soldierCount;
+                        activeHex.soldierCount = 0;
+                    }
+
+                    theHexInTheWorldMap.soldierCount = localSoldierCount;
+                    theHexInTheWorldMap.playerOwner = localCP;
+
+                    // Unset the active hex
+                    activeHex.active = false;
+                }
+            }else{
+                // We are in the placing phase.
+                if (theHexInTheWorldMap.playerOwner == localCP){
+                    // Add one to the hex soldier count.
+                    theHexInTheWorldMap.soldierCount++;
+                    // Subtract one from the current players storage.
+                    localCP.subtractFromStorage();
+                }
+            }
+/*
             if (localCP.storage > 0 && playerOwnsANeighboringHexagon(localCP, theHexInTheWorldMap))
             {
+                
                 if (theHexInTheWorldMap.playerOwner == localCP){
                     // Add one to the hex soldier count.
                     theHexInTheWorldMap.soldierCount++;
@@ -191,7 +235,7 @@ function addEventListenersToHexes(){
                         }
                     }
                 }
-            }
+            }*/
             
             // Redraw. I'm not sure how best to do this yet, so this works for now.
             drawWorld();
@@ -225,7 +269,15 @@ function addEventListenersToHexes(){
     });
 }
 
-function setCurrentPlayer(){
+function setActiveHex(hexagon){
+    activeHex = hexagon;
+}
+
+function unsetActiveHex(hexagon){
+    activeHex = null;
+}
+
+function displayCurrentPlayer(){
     let pdiv = document.getElementById('currentPlayer');
     let currentPlayer = getCurrentPlayer();
     pdiv.innerHTML = currentPlayer.name;
@@ -240,6 +292,16 @@ function getCurrentRound(){
     return Math.floor(currentTurn / (players.length * 2)) + 1;
 }
 
+function getCurrentPhase(){
+    let currentPhase = (currentTurn % (players.length * 2)) < players.length ? 1 : 2;
+    
+    if (currentPhase === 1){
+        return 'Attacking';
+    }else{
+        return 'Placing';
+    }
+}
+
 function displayCurrentTurn(){
     let tdiv = document.getElementById('currentTurn');
     tdiv.innerHTML = currentTurn;
@@ -252,13 +314,7 @@ function displayCurrentRound(){
 
 function displayCurrentPhase(){
     let phdiv = document.getElementById('currentPhase');
-    let currentPhase = (currentTurn % (players.length * 2)) < players.length ? 1 : 2;
-    
-    if (currentPhase === 1){
-        phdiv.innerHTML = 'Placing';
-    }else{
-        phdiv.innerHTML = 'Attacking';
-    }
+    phdiv.innerHTML = getCurrentPhase();
 }
 
 function calculateCurrentPlayerStorage(){
@@ -285,7 +341,7 @@ function calculateCurrentPlayerStorage(){
 function endCurrentPlayerTurn(){
     console.log(`Ending player ${getCurrentPlayer().name} turn`);
     increaseCurrentTurn();
-    setCurrentPlayer();
+    displayCurrentPlayer();
     displayCurrentTurn()
     displayCurrentRound();
     displayCurrentPhase();
@@ -311,16 +367,6 @@ function getPlayerCount(){
 
 function increaseCurrentTurn(){
     currentTurn++;
-}
-
-function buildPlayerBoard(){
-    let playerBoard = document.getElementById('playerBoard');
-    playerBoard.innerHTML = "";
-    players.forEach((player) => {
-        let pDiv = document.createElement('div');
-        pDiv.innerHTML = `<div>${player.name} : <span style="display:inline-block;background-color:${player.color};padding:2px;">${player.storage}</span></div>`;
-        playerBoard.appendChild(pDiv);
-    });
 }
 
 function computerPlayerLoop(){
