@@ -14,7 +14,11 @@ class Player{
         console.log(`Subtracting ${amount} from storage`);
         this.storage -= amount;
     }
-    zeroStorage(){
+    setStorageTo(newStorageAmount){
+        console.log(`Setting storage to ${newStorageAmount}`);
+        this.storage = newStorageAmount;
+    }
+    zeroOutStorage(){
         console.log(`Setting storage to 0`);
         this.storage = 0;
     }

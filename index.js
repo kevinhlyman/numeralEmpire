@@ -174,13 +174,12 @@ function addEventListenersToHexes(){
                             // There is no active hex so make this one the active hex.
                             setActiveHex(theHexInTheWorldMap);
                         }else{
-                            // There is an active hex and it's not the one they clicked so move the soldiers from the active hex to this hex
+                            // There is an active hex and it's not the one they clicked so move the soldiers from the active hex to this hex.
                             let localSoldierCount = 0;
-                            if (activeHex.hexType == hexTypes.HOME)
-                            {
+                            if (activeHex.hexType == hexTypes.HOME){
                                 // There won't be a soldier count. It uses the storage
                                 localSoldierCount = activeHex.playerOwner.storage;
-                                activeHex.playerOwner.zeroStorage();
+                                activeHex.playerOwner.zeroOutStorage();
                             }else{
                                 localSoldierCount = activeHex.soldierCount;
                                 activeHex.soldierCount = 0;
@@ -194,54 +193,113 @@ function addEventListenersToHexes(){
                     }
                 }else if(activeHex !== null && theHexInTheWorldMap.playerOwner === null){
                     // Nobody owns it so take it.
-                    let localSoldierCount = 0;
-                    if (activeHex.hexType == hexTypes.HOME)
-                    {
-                        // There won't be a soldier count. It uses the storage
-                        localSoldierCount = activeHex.playerOwner.storage;
-                        activeHex.playerOwner.zeroStorage();
-                    }else{
-                        localSoldierCount = activeHex.soldierCount;
-                        activeHex.soldierCount = 0;
-                    }
+                     // Make sure they can actually move to this hex
+                     if (playerOwnsANeighboringHexagon(localCP, theHexInTheWorldMap)){
+                        let localSoldierCount = 0;
+                        if (activeHex.hexType == hexTypes.HOME)
+                        {
+                            // There won't be a soldier count. It uses the storage
+                            localSoldierCount = activeHex.playerOwner.storage;
+                            activeHex.playerOwner.zeroOutStorage();
+                        }else{
+                            localSoldierCount = activeHex.soldierCount;
+                            activeHex.soldierCount = 0;
+                        }
 
-                    theHexInTheWorldMap.soldierCount = localSoldierCount;
-                    theHexInTheWorldMap.playerOwner = localCP;
-
-                    // Unset the active hex
-                    unsetActiveHex();
-                }else if(activeHex !== null && theHexInTheWorldMap.playerOwner !== null){
-                    // Another player owns the hex so do some attacking math
-                    let activeArmy = activeHex.soldierCount; // This will need the Home check too.
-                    let enemyArmy = theHexInTheWorldMap.soldierCount; // This will need the Home check too.
-                    // This is not the correct way to do this but it's how it's being done right now until I write a method to 'combine' hexegons
-                    if (activeArmy > enemyArmy){
-                        // The active army wins
-                        let leftOverArmy = activeArmy - enemyArmy;
-                        activeHex.soldierCount = 0;
-                        theHexInTheWorldMap.soldierCount = leftOverArmy;
+                        theHexInTheWorldMap.soldierCount = localSoldierCount;
                         theHexInTheWorldMap.playerOwner = localCP;
-                    }else if (activeArmy === enemyArmy){
-                        // They tied, everyone dies.... ;(
-                        activeHex.soldierCount = 0; // This will need the Home check too.
-                        theHexInTheWorldMap.soldierCount = 0; // This will need the Home check too.
-                    }else if (activeArmy < enemyArmy){
-                        // The active army dies
-                        let leftOverArmy = activeArmy - enemyArmy;
-                        activeHex.soldierCount = 0;
-                        theHexInTheWorldMap.soldierCount = enemyArmy - activeArmy; // This will need the Home check too.
+
+                        // Unset the active hex
+                        unsetActiveHex();
                     }
-                    
-                    unsetActiveHex();
+                }else if(activeHex !== null && theHexInTheWorldMap.playerOwner !== null){
+                    if (playerOwnsANeighboringHexagon(localCP, theHexInTheWorldMap)){
+                        // Another player owns the hex so do some attacking math
+                        let activeArmy = activeHex.hexType === hexTypes.HOME ? activeHex.playerOwner.storage : activeHex.soldierCount;
+                        let enemyArmy = theHexInTheWorldMap === hexTypes.HOME ? theHexInTheWorldMap.playerOwner.storage : theHexInTheWorldMap.soldierCount;
+
+                        // This is not the correct way to do this but it's how it's being done right now until I write a method to 'combine' hexegons
+                        if (activeArmy > enemyArmy){
+                            // The active army wins
+                            console.log(`Attcking army Wins.`);
+                            let leftOverArmy = activeArmy - enemyArmy;
+
+                            // Clear out attacking
+                            if (activeHex.hexType === hexTypes.HOME){
+                                // They attacked from their home
+                                activeHex.playerOwner.zeroOutStorage();
+                            }else{
+                                activeHex.soldierCount = 0;
+                            }
+
+                            let oldOwner = theHexInTheWorldMap.playerOwner
+                            let wasHome = theHexInTheWorldMap.hexType === hexTypes.HOME;
+                            // Now take over the hex
+                            theHexInTheWorldMap.playerOwner = localCP;
+                            theHexInTheWorldMap.soldierCount = leftOverArmy;
+                            theHexInTheWorldMap.hexType = hexTypes.BASIC;
+
+                            // If it was their home, find them a new one.
+                            if (wasHome){
+                                // Their home was attacked
+                                oldOwner.zeroOutStorage();
+                                let playerHexes  = findAllHexesForPlayer(oldOwner);
+                                if (playerHexes.length > 0){
+                                    // For now randomly select a hex to make the home.
+                                    let newHomeHex = playerHexes[Math.floor(Math.random() * 2)];
+                                    newHomeHex.hexType = hexTypes.HOME;
+                                    newHomeHex.soldierCount = 0;
+                                }
+                            }
+
+
+                                
+                        }else if (activeArmy === enemyArmy){
+                            console.log(`Armies Tie.`);
+                            // They tied, everyone dies.... ;(
+                            if (activeHex.hexType === hexTypes.HOME){
+                                activeHex.playerOwner.zeroOutStorage();
+                            }else{
+                                activeHex.soldierCount = 0;
+                            }
+                            
+                            if (theHexInTheWorldMap === hexTypes.HOME){
+                                theHexInTheWorldMap.playerOwner.zeroOutStorage();
+                            }else{
+                                theHexInTheWorldMap.soldierCount = 0;
+                            }
+                            
+                        }else if (activeArmy < enemyArmy){
+                            // The active army dies
+                            console.log(`Attcking army loses.`);
+                            if (activeHex.hexType === hexTypes.HOME){
+                                activeHex.playerOwner.zeroOutStorage();
+                            }else{
+                                activeHex.soldierCount = 0;
+                            }
+
+                            let leftOverArmy = enemyArmy - activeArmy;
+                            if (theHexInTheWorldMap === hexTypes.HOME){
+                                theHexInTheWorldMap.playerOwner.setStorageTo(leftOverArmy);
+                            }else{
+                                theHexInTheWorldMap.soldierCount = leftOverArmy;
+                            }
+                        }
+                        
+                        unsetActiveHex();
+                    }
                 }
-            }else{
+            }else if (getCurrentPhase() === 'Placing'){
                 // We are in the placing phase.
                 if (theHexInTheWorldMap.playerOwner == localCP){
-                    if(localCP.storage > 0){
-                    // Add one to the hex soldier count.
-                    theHexInTheWorldMap.soldierCount++;
-                    // Subtract one from the current players storage.
-                    localCP.subtractFromStorage();
+                    // We don't want to do anything if the player is clicking on their HOME
+                    if (theHexInTheWorldMap.hexType !== hexTypes.HOME){
+                        if (localCP.storage > 0){
+                            // Add one to the hex soldier count.
+                            theHexInTheWorldMap.soldierCount++;
+                            // Subtract one from the current players storage.
+                            localCP.subtractFromStorage();
+                        }
                     }
                 }
             }
@@ -361,6 +419,7 @@ function computerPlayerLoop(){
     console.log(`Computer player ${getCurrentPlayer().name} is playing`);
     let currentPlayer = getCurrentPlayer();
     let playerOwnedHexes = [];
+    let maxTurns = 10; // For now a safety mechanism so this loop don't run away wild
 
     // Get a list of owned hexes by the player
     worldMap.forEach((row) => {
@@ -371,37 +430,59 @@ function computerPlayerLoop(){
         });
     });
 
-    // see if they have anything in storage to use
-    let maxTurns = 10; // For now a safety mechanism so this loop don't run away wild
-    while (currentPlayer.storage > 0 && maxTurns > 0){
-        console.log(currentPlayer.storage);
-        // find a hex that has a neighbor with an unowned hex and put a soldier in it
-        playerOwnedHexes.forEach((hexagon) => {
-            for(let h = 0; h < 6; h++){
-                let nayb = hexagon.neighbor(h);
 
-                // For now this will work but we should make a map or world class and encapsulate all this type of stuff
-                if (worldMap[nayb.r] != null){// Stay inside the bounds
-                    let naybInHexWorldMap = worldMap[nayb.r][nayb.q + Math.floor(nayb.r/2.0)];
-                    if (naybInHexWorldMap != null){
-                        if(naybInHexWorldMap.playerOwner != currentPlayer){
-                            // make sure we have something in storage to use
-                            if (currentPlayer.storage > 0){
-                                // take it and turn down the storage by 1
-                                naybInHexWorldMap.playerOwner = currentPlayer;
-                                naybInHexWorldMap.soldierCount = 1;
-                                currentPlayer.subtractFromStorage();
+    // Depending on the current phase of the game we need to do different things
+    if (getCurrentPhase() === 'Placing'){
+        while (currentPlayer.storage > 0 && maxTurns > 0){
+            //We will add to each and every hex they own until they run out
+            console.log(`Adding soldiers to computer hexes.`);
+            playerOwnedHexes.forEach((hexagon) => {
+                if (currentPlayer.storage > 0 && hexagon.hexType !== hexTypes.HOME)
+                {
+                    hexagon.soldierCount++;
+                    currentPlayer.subtractFromStorage();
+                }            
+
+                // this probably isn't the correct place to put this but just for now.
+                drawWorld();
+            });
+            maxTurns--;
+        }
+    }else if (getCurrentPhase() === 'Attacking'){
+        while (maxTurns > 0){
+            // find a hex owned that has a neighbor with an unowned hex and move the soldiers into it.
+            playerOwnedHexes.forEach((hexagon) => {
+                for(let h = 0; h < 6; h++){
+                    if ((hexagon.hexType === hexTypes.HOME && currentPlayer.storage > 0) || hexagon.soldierCount > 0){
+                        let nayb = hexagon.neighbor(h);
+        
+                        // For now this will work but we should make a map or world class and encapsulate all this type of stuff
+                        if (worldMap[nayb.r] != null){// Stay inside the bounds
+                            let naybInHexWorldMap = worldMap[nayb.r][nayb.q + Math.floor(nayb.r/2.0)];
+                            if (naybInHexWorldMap != null){
+                                if(naybInHexWorldMap.playerOwner === null){
+                                    // Move soldier from the current hex to this one.
+                                    let soldierCountToMove = hexagon.hexType === hexTypes.HOME ? currentPlayer.storage : hexagon.soldierCount;
+                                    console.log(`Moving ${soldierCountToMove} from ${hexagon} to ${naybInHexWorldMap}`);
+                                    naybInHexWorldMap.soldierCount = soldierCountToMove;
+                                    naybInHexWorldMap.playerOwner = currentPlayer;
+
+                                    if (hexagon.hexType === hexTypes.HOME){
+                                        currentPlayer.zeroOutStorage();
+                                    }else{
+                                        hexagon.soldierCount = 0;
+                                    }
+                                }
                             }
-                        }
+                        }  
                     }
-                }  
-            }
-            
-            // this probably isn't the correct place to put this but just for now.
-            drawWorld();
-        });
-
-        maxTurns--;
+                }
+                
+                // this probably isn't the correct place to put this but just for now.
+                drawWorld();
+            });
+            maxTurns--;
+        }
     }
 
     endCurrentPlayerTurn();
