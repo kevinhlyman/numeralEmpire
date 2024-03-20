@@ -156,9 +156,14 @@ function addEventListenersToHexes(){
                         }
                     }
                 }else if(activeHex !== null && theHexInTheWorldMap.playerOwner === null){
+                    console.log(activeHex);
+                    console.log(theHexInTheWorldMap);
+                    console.log(activeHex.distanceTo(theHexInTheWorldMap));
+                    console.log(theHexInTheWorldMap.distanceTo(activeHex));
+
                     // Nobody owns it so take it.
                      // Make sure they can actually move to this hex
-                     if (playerOwnsANeighboringHexagon(localCP, theHexInTheWorldMap)){
+                     if (activeHex.distanceTo(theHexInTheWorldMap) == 1){
                         let localSoldierCount = 0;
                         if (activeHex.hexType == hexTypes.HOME)
                         {
@@ -177,7 +182,8 @@ function addEventListenersToHexes(){
                         unsetActiveHex();
                     }
                 }else if(activeHex !== null && theHexInTheWorldMap.playerOwner !== null){
-                    if (playerOwnsANeighboringHexagon(localCP, theHexInTheWorldMap)){
+
+                    if (activeHex.distanceTo(theHexInTheWorldMap) == 1){
                         // Another player owns the hex so do some attacking math
                         let activeArmy = activeHex.hexType === hexTypes.HOME ? activeHex.playerOwner.storage : activeHex.soldierCount;
                         let enemyArmy = theHexInTheWorldMap === hexTypes.HOME ? theHexInTheWorldMap.playerOwner.storage : theHexInTheWorldMap.soldierCount;
