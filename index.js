@@ -1,10 +1,11 @@
 import Hex from './Hex.js';
-import { hexTypes } from './HexType.js';
+import { hexTypes } from './Types/HexType.js';
+import { phaseTypes } from './Types/PhaseType.js';
 import { Player, HumanPlayer, ComputerPlayer } from './Player.js';
+import HexWorld from './HexWorld.js';
 
-/** @type {Hex[][]} */
-let worldMap = [];
-let players = [];
+
+let theWorld;
 let currentTurn = 0;
 let activeHex = null;
 
@@ -20,10 +21,10 @@ btnEndTurn.addEventListener('click', endCurrentPlayerTurn);
 
 //Create a new array of arrays based off of the what the user set in the menu fields
 function createWorld(){
+
     //Reset the world and get the rows and columns
-    worldMap = [];
     currentTurn = 0;
-    players = [
+    let players = [
         new HumanPlayer('Human', 'var(--player1-background)'),
         new ComputerPlayer('AI-1', 'var(--player2-background)'),
         new ComputerPlayer('AI-2', 'var(--player3-background)'),
@@ -32,46 +33,9 @@ function createWorld(){
 
     let desiredRows = document.getElementById('rowsInput').value;
     let desiredColumns = document.getElementById('columnsInput').value;
-    let left = 0;
-    let right = desiredColumns - 1;
-    let top = 0;
-    let bottom = desiredRows - 1;
 
-    // Cycle through and make our 'world' 
-    // I think the for loops will need to change based on the hex type, flat or pointy
-    // This is for pointy and odd row indent
-    for (let r = top; r <= bottom; r++){
-        /** @type {Hex[]} */
-        let row = [];
-        let r_offset = Math.floor(r/2.0);
-        for (let q = left - r_offset; q <= right - r_offset; q++){
-            let newHex = new Hex(q, r, -q-r);
-            row.push(newHex);
-        }
-        worldMap.push(row);
-    }
+    theWorld = new HexWorld(desiredColumns, desiredRows, players);
 
-    // Set starting positions for players
-    worldMap[top][left].playerOwner = players[0];
-    worldMap[top][left].hexType = hexTypes.HOME;
-
-    worldMap[top][right].playerOwner = players[1];
-    worldMap[top][right].hexType = hexTypes.HOME;
-
-    worldMap[bottom][left].playerOwner = players[2];
-    worldMap[bottom][left].hexType = hexTypes.HOME;
-
-    worldMap[bottom][right].playerOwner = players[3];
-    worldMap[bottom][right].hexType = hexTypes.HOME;
-
-    //this is for debuging so we can get at the structure
-    window.worldMap = worldMap;
-    window.players = players;
-    window.currentTurn = currentTurn;
-
-
-    //Not sure if we should draw it here. Seems like creating and drawing are different responsibilities.
-    
     displayCurrentPlayer();
     calculateCurrentPlayerStorage();
     displayCurrentTurn();
@@ -90,7 +54,7 @@ function drawWorld(){
 function drawPointyWorld(){
     let displayCoords = document.getElementById('includeCoords').checked;
 
-    worldMap.forEach((row, rowIndex) => {
+    theWorld.worldMap.forEach((row, rowIndex) => {
         const rowDiv = document.createElement('div');
         rowDiv.classList.add('row-pointy');
         if (rowIndex % 2){
@@ -153,7 +117,7 @@ function addEventListenersToHexes(){
             console.log('Clicked a hexagon');
             let q = +this.getAttribute('q');
             let r = +this.getAttribute('r');
-            let theHexInTheWorldMap = worldMap[r][q + Math.floor(r/2.0)];
+            let theHexInTheWorldMap = theWorld.worldMap[r][q + Math.floor(r/2.0)];
 
             //We'll probably need something here to do nothing if the click isn't coming from the current player
             //right now it's a single player game so if the player is clicking on hexagons while it's the computers turn we don't want anything to happen
@@ -161,7 +125,7 @@ function addEventListenersToHexes(){
             let localCP = getCurrentPlayer();
 
             // We need to know what phase we're in to know how to respond.
-            if (getCurrentPhase() === 'Attacking'){
+            if (getCurrentPhase() === phaseTypes.ATTACKING){
                 // We are in the attacking phase.
                 if (theHexInTheWorldMap.playerOwner == localCP){
                     // We need to highlight/unhighlight the hex to show it is selected or not selected.
@@ -289,7 +253,7 @@ function addEventListenersToHexes(){
                         unsetActiveHex();
                     }
                 }
-            }else if (getCurrentPhase() === 'Placing'){
+            }else if (getCurrentPhase() === phaseTypes.PLACING){
                 // We are in the placing phase.
                 if (theHexInTheWorldMap.playerOwner == localCP){
                     // We don't want to do anything if the player is clicking on their HOME
@@ -333,16 +297,16 @@ function getCurrentTurn(){
 }
 
 function getCurrentRound(){
-    return Math.floor(currentTurn / (players.length * 2)) + 1;
+    return Math.floor(currentTurn / (theWorld.players.length * 2)) + 1;
 }
 
 function getCurrentPhase(){
-    let currentPhase = (currentTurn % (players.length * 2)) < players.length ? 1 : 2;
+    let currentPhase = (currentTurn % (theWorld.players.length * 2)) < theWorld.players.length ? 1 : 2;
     
     if (currentPhase === 1){
-        return 'Placing';
+        return phaseTypes.PLACING;//'Placing';
     }else{
-        return 'Attacking';
+        return phaseTypes.ATTACKING;//'Attacking';
     }
 }
 
@@ -363,12 +327,12 @@ function displayCurrentPhase(){
 
 function calculateCurrentPlayerStorage(){
     // We only do this on the Placing phase
-    if (getCurrentPhase() === 'Placing'){
+    if (getCurrentPhase() === phaseTypes.PLACING){
         let currentPlayer = getCurrentPlayer();
         let addToStorage = 0;
         let subtractFromStorage = 0.0;
     
-        worldMap.forEach((row) => {
+        theWorld.worldMap.forEach((row) => {
             row.forEach((hexagon) => {
                 if (hexagon.playerOwner == currentPlayer){
                     addToStorage++;
@@ -404,11 +368,11 @@ function endCurrentPlayerTurn(){
 }
 
 function getCurrentPlayer(){
-    return players[getCurrentTurn() % getPlayerCount()];
+    return theWorld.players[getCurrentTurn() % getPlayerCount()];
 }
 
 function getPlayerCount(){
-    return players.length;
+    return theWorld.players.length;
 }
 
 function increaseCurrentTurn(){
@@ -422,7 +386,7 @@ function computerPlayerLoop(){
     let maxTurns = 10; // For now a safety mechanism so this loop don't run away wild
 
     // Get a list of owned hexes by the player
-    worldMap.forEach((row) => {
+    theWorld.worldMap.forEach((row) => {
         row.forEach((hexagon) => {
             if (hexagon.playerOwner == currentPlayer){
                 playerOwnedHexes.push(hexagon);
@@ -432,7 +396,7 @@ function computerPlayerLoop(){
 
 
     // Depending on the current phase of the game we need to do different things
-    if (getCurrentPhase() === 'Placing'){
+    if (getCurrentPhase() === phaseTypes.PLACING){
         while (currentPlayer.storage > 0 && maxTurns > 0){
             //We will add to each and every hex they own until they run out
             console.log(`Adding soldiers to computer hexes.`);
@@ -448,7 +412,7 @@ function computerPlayerLoop(){
             });
             maxTurns--;
         }
-    }else if (getCurrentPhase() === 'Attacking'){
+    }else if (getCurrentPhase() === phaseTypes.ATTACKING){
         while (maxTurns > 0){
             // find a hex owned that has a neighbor with an unowned hex and move the soldiers into it.
             playerOwnedHexes.forEach((hexagon) => {
@@ -457,8 +421,8 @@ function computerPlayerLoop(){
                         let nayb = hexagon.neighbor(h);
         
                         // For now this will work but we should make a map or world class and encapsulate all this type of stuff
-                        if (worldMap[nayb.r] != null){// Stay inside the bounds
-                            let naybInHexWorldMap = worldMap[nayb.r][nayb.q + Math.floor(nayb.r/2.0)];
+                        if (theWorld.worldMap[nayb.r] != null){// Stay inside the bounds
+                            let naybInHexWorldMap = theWorld.worldMap[nayb.r][nayb.q + Math.floor(nayb.r/2.0)];
                             if (naybInHexWorldMap != null){
                                 if(naybInHexWorldMap.playerOwner === null){
                                     // Move soldier from the current hex to this one.
@@ -494,8 +458,8 @@ function playerOwnsANeighboringHexagon(player, hexagon){
         let nayb = hexagon.neighbor(h);
 
         // For now this will work but we should make a map or world class and encapsulate all this type of stuff
-        if (worldMap[nayb.r] != null){// Stay inside the bounds
-            let naybInHexWorldMap = worldMap[nayb.r][nayb.q + Math.floor(nayb.r/2.0)];
+        if (theWorld.worldMap[nayb.r] != null){// Stay inside the bounds
+            let naybInHexWorldMap = theWorld.worldMap[nayb.r][nayb.q + Math.floor(nayb.r/2.0)];
             if (naybInHexWorldMap != null){
                 if(naybInHexWorldMap.playerOwner == player){
                     return true;
@@ -518,7 +482,7 @@ function findAllHexesForPlayer(player){
     // For now just loop through the world 1 by 1 and find all the hexes that belong to this player.
     let playerHexes = [];
     // This is a definite place for optimization
-    worldMap.forEach((row) => {
+    theWorld.worldMap.forEach((row) => {
         row.forEach((hexagon) => {
             if (hexagon.playerOwner == player){
                 playerHexes.push(hexagon);

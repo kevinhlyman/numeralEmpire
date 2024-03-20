@@ -1,4 +1,4 @@
-import {hexTypes} from './HexType.js';
+import {hexTypes} from './Types/HexType.js';
 class Hex {
     #active = false;
     #hexType = hexTypes.BASIC;
