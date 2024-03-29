@@ -1,5 +1,5 @@
 import Hex from './Hex.js';
-import { hexTypes } from './Types/HexType.js';
+import { hexImprovementType } from './Types/HexImprovementType.js';
 
 class HexWorld{
     #worldMap = [];
@@ -31,16 +31,16 @@ class HexWorld{
 
         // This is just baked in and hard coded for now, for 4 players too.
         this.#worldMap[top][left].playerOwner = players[0];
-        this.#worldMap[top][left].hexType = hexTypes.HOME;
+        this.#worldMap[top][left].hexImprovement = hexImprovementType.HOME;
 
         this.#worldMap[top][right].playerOwner = players[1];
-        this.#worldMap[top][right].hexType = hexTypes.HOME;
+        this.#worldMap[top][right].hexImprovement = hexImprovementType.HOME;
 
         this.#worldMap[bottom][left].playerOwner = players[2];
-        this.#worldMap[bottom][left].hexType = hexTypes.HOME;
+        this.#worldMap[bottom][left].hexImprovement = hexImprovementType.HOME;
 
         this.#worldMap[bottom][right].playerOwner = players[3];
-        this.#worldMap[bottom][right].hexType = hexTypes.HOME;
+        this.#worldMap[bottom][right].hexImprovement = hexImprovementType.HOME;
     }
 
     get players(){
@@ -50,6 +50,7 @@ class HexWorld{
     get worldMap(){
         return this.#worldMap;
     }
+
     getHex(r, q){
         let adjustedIndex = q + Math.floor(r / 2.0);
         let hex = this.#worldMap[r] && this.#worldMap[r][adjustedIndex];
