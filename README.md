@@ -12,12 +12,16 @@ This is a game that will be like 'Slay' by Sean O'Connor: A very simple Civiliza
 - Each hex is worth 1 money at the beginning of the turn. If the player has 10 hexagons then that's an income of 10. 10*1=10.
 - The maintenance costs is subtracted from the income. So if the player has 10 hexagons and they have 10 soldiers in one hex and 4 soldiers in the other then that's a net positive of 3. (10*1)-(10+4)/2=3.
 - Any extra income is put into the Home hex. This is storage and does not incur a maintenance cost.
-- Any negative is taken from the smallest army first. The negative takes away from that single army (soldiers in a single hex) until it is gone, then it moves to the next smalles army and continues. So a hex with 5 soldiers and a hex with 10 soldiers and a negative income of -6 will completely whipe out the army of 5 and then take one away from the army of 10.
+- Any negative is taken from the smallest army first. The negative takes away from that single army (soldiers in a single hex) until it is gone, then it moves to the next smallest army and continues. So a hex with 5 soldiers and a hex with 10 soldiers and a negative income of -6 will completely whipe out the army of 5 and then take one away from the army of 10.
 
 ## Hexagon upgrades
 - Home. This is the home location that is determined at the start of the game. If your home is taken over it will move to a random hex that you already own. You do not lose.
 - Farm. A farm can be purchased and placed on any hexagon you own without an upgrade already on it. A Farm is +1. So a hexagon with a farm will generate 2 money a turn. Farm Costs 3 to buy.
-- Tower. A Tower allows the hexagon to provide defense to the hexagons next to it as if whatever amount of soldiers in the tower were in any of those hexagons. So if the player has a hexagon with a tower and an army of 10 soldiers in it, then if an enemy player tries to attack a hexagon next to the tower the tower will come to it's defence and those soldiers will be attacked like they were in the hex being attacked. It's a way to try and keep enemies from sneaking through. A tower can be purchased and placed on any hexagon without an upgrade already on it. A tower keeps the hexagon from generating any income. A hex with a tower generates 0 money a turn. Tower costs 5 to buy.
+- Market. Like a Farm but +2. Cost 9.
+- Bank. Like a Farm but +3. Cost 12.
+- Highrise. Like a Farm but +4. Cost 15.
+- Archology. Like a Farm but +5. Cost 20. 
+- Tower. A Tower allows the hexagon to provide defense to the hexagons next to it as if whatever amount of soldiers in the tower were in any of those hexagons. So if the player has a hexagon with a tower and an army of 10 soldiers in it, then if an enemy player tries to attack a hexagon next to the tower the tower will come to it's defence and those soldiers will be attacked like they were in the hex being attacked. It's a way to try and keep enemies from sneaking through. A tower can be purchased and placed on any hexagon without an upgrade already on it. A tower keeps the hexagon from generating any income. A hex with a tower generates 0 money a turn. Tower costs 15 to buy.
 
 ## Battling & movement
 - Battling is just math. If a hexagon that has 10 soldiers attacks a hexagon that has 9 soldiers then 1 soldier lives and takes over the hexagon that had the 9. 10-9=1. That's all that's left of the army of 10. 

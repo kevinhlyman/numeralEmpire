@@ -96,14 +96,36 @@ body {
   }
 }
 
-.Home {
+.hexagon-improvement {
   position: absolute;
   top: 22%;
   left: 22%;
   width: 50px;
   height: 50px;
-  /*background-image: url('data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2020%2020%22%20width=%2220%22%20height=%2215%22%3E%3Cpolygon%20points=%220,15%200,10%2010,0%2020,10%2020,15%20%22%20style=%22fill:black;stroke:black;stroke-width:1;%22%3E%3C/polygon%3E%3C/svg%3E');*/
+}
+
+.home {
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50"><polygon points="0,50 0,25 25,0 50,25 50,50 " style="fill:black;stroke:black;stroke-width:1;"></polygon></svg>');
+}
+
+.farm {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50"><polygon points="0,50 0,25 8,10 25,0 42,10 50,25 50,50 " style="fill:black;stroke:black;stroke-width:1;"></polygon></svg>');
+}
+
+.market {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50"><polygon points="0,50 0,20 10,20 10,15 40,15 40,20 50,20 50,50 " style="fill:black;stroke:black;stroke-width:1;"></polygon></svg>');
+}
+
+.bank {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50"><polygon points="0,50 0,45 5,45 5,25 0,25 25,10 50,25 45,25 45,45 50,45 50,50 " style="fill:black;stroke:black;stroke-width:1;"></polygon></svg>');
+}
+
+.highrise {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50"><polygon points="0,50 0,25 10,25 10,15 20,15 20,10 20,0 50,25 50,50 " style="fill:black;stroke:black;stroke-width:1;"></polygon></svg>');
+}
+
+.tower {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50"><polygon points="0,50 5,45 12,44 12,20 5,15 5,5 15,5 15,10 20,10 20,5 30,5 30,10 35,10 35,5 45,5 45,15 38,20 38,44 45,45 50,50 " style="fill:black;stroke:black;stroke-width:1;"></polygon></svg>');
 }
 
 #currentPlayer,#currentTurn, #currentRound, #currentPhase {

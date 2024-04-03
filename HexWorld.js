@@ -41,6 +41,18 @@ class HexWorld{
 
         this.#worldMap[bottom][right].playerOwner = players[3];
         this.#worldMap[bottom][right].hexImprovement = hexImprovementType.HOME;
+
+        // For testing hex types
+        this.#worldMap[0][1].playerOwner = players[0];
+        this.#worldMap[0][1].hexImprovement = hexImprovementType.FARM;
+        this.#worldMap[0][2].playerOwner = players[0];
+        this.#worldMap[0][2].hexImprovement = hexImprovementType.MARKET;
+        this.#worldMap[0][3].playerOwner = players[0];
+        this.#worldMap[0][3].hexImprovement = hexImprovementType.BANK;
+        this.#worldMap[0][4].playerOwner = players[0];
+        this.#worldMap[0][4].hexImprovement = hexImprovementType.HIGHRISE;
+        this.#worldMap[0][5].playerOwner = players[0];
+        this.#worldMap[0][5].hexImprovement = hexImprovementType.TOWER;
     }
 
     get players(){

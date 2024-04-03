@@ -7,6 +7,5 @@ export const hexImprovementData = {
     [hexImprovementType.MARKET]: {price: 9, modifier: 3},
     [hexImprovementType.BANK]: {price: 12, modifier: 4},
     [hexImprovementType.HIGHRISE]: {price: 15, modifier: 5},
-    [hexImprovementType.ARCOLOGY]: {price: 20, modifier: 6},
-    [hexImprovementType.TOWER]: {price: 15, modifier: -1},
+    [hexImprovementType.TOWER]: {price: 15, modifier: 0},
 }

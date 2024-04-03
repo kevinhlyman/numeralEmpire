@@ -83,6 +83,7 @@ function drawPointyWorld(){
             }else{
                 // Display the improvement
                 let hexTypeDiv = document.createElement('div');
+                hexTypeDiv.classList.add(`hexagon-improvement`);
                 hexTypeDiv.classList.add(hexagon.hexImprovement);
                 hexagonDiv.appendChild(hexTypeDiv);
                 
@@ -409,7 +410,9 @@ function computerPlayerLoop(){
                             if (nayb && nayb.playerOwner == null){
                                 // Move soldier from the current hex to this one.
                                 let soldierCountToMove = hexagon.hexImprovement === hexImprovementType.HOME ? currentPlayer.storage : hexagon.soldierCount;
+
                                 console.log(`Moving ${soldierCountToMove} from ${hexagon} to ${nayb}`);
+
                                 nayb.soldierCount = soldierCountToMove;
                                 nayb.playerOwner = currentPlayer;
 
