@@ -1,5 +1,7 @@
 import Hex from './Hex.js';
-import { hexTypes } from './Types/HexType.js';
+import { hexTerrainType } from './Types/HexTerrainType.js';
+import { hexImprovementType } from './Types/HexImprovementType.js';
+import { hexImprovementData } from './Data/HexImprovementData.js';
 import { phaseTypes } from './Types/PhaseType.js';
 import { Player, HumanPlayer, ComputerPlayer } from './Player.js';
 import HexWorld from './HexWorld.js';
@@ -18,6 +20,32 @@ const btnMakeWorld = document.getElementById('btnMakeWorld');
 btnMakeWorld.addEventListener('click', createWorld);
 const btnEndTurn = document.getElementById('btnEndTurn');
 btnEndTurn.addEventListener('click', endCurrentPlayerTurn);
+const toggleCreateMenu = document.getElementById('creationMenuToggle');
+toggleCreateMenu.addEventListener('click',toggleMenu)
+const buildingBoardElements = document.querySelectorAll('.purchase-square');
+buildingBoardElements.forEach(element => element.addEventListener('click', function(event){
+    addBuildingToBoard(event.currentTarget.getAttribute("data-improvement-type"), activeHex);
+}));
+
+function addBuildingToBoard(improvementType, hexagon){
+    if (hexagon == null){
+        return;
+    }
+    
+    if (Object.values(hexImprovementType).includes(improvementType)){
+        let currentPlayer = getCurrentPlayer();
+        let availableMoney = currentPlayer.storage;
+        let improvementPrice = hexImprovementData[improvementType].price;
+
+        if (availableMoney >= improvementPrice){
+            theWorld.changeImprovementTypeTo(improvementType, activeHex);
+            currentPlayer.subtractFromStorage(improvementPrice);
+            unsetActiveHex();
+            drawWorld();
+        }
+    }
+}
+
 
 //Create a new array of arrays based off of the what the user set in the menu fields
 function createWorld(){
@@ -72,7 +100,7 @@ function drawPointyWorld(){
             hexagonDiv.setAttribute('columnIndex', columnIndex);
             if (hexagon.playerOwner){hexagonDiv.style.backgroundColor = hexagon.playerOwner.color}
             if (displayCoords){hexagonDiv.innerHTML = `<div class="hex-info">${hexagon.toString()}</div>`}
-            if (hexagon.hexType == hexTypes.BASIC){
+            if (hexagon.hexImprovement == hexImprovementType.NONE){
                 if (hexagon.soldierCount > 0){
                     let hexSoldierDiv = document.createElement('div');
                     hexSoldierDiv.classList.add('soldier-div');
@@ -80,12 +108,13 @@ function drawPointyWorld(){
                     hexagonDiv.appendChild(hexSoldierDiv);
                 }
             }else{
-                // Display its type
+                // Display the improvement
                 let hexTypeDiv = document.createElement('div');
-                hexTypeDiv.classList.add(hexagon.hexType);
+                hexTypeDiv.classList.add(`hexagon-improvement`);
+                hexTypeDiv.classList.add(hexagon.hexImprovement);
                 hexagonDiv.appendChild(hexTypeDiv);
                 
-                if (hexagon.hexType == hexTypes.HOME){
+                if (hexagon.hexImprovement == hexImprovementType.HOME){
                     //Then we want to show the 'storage' here
                     let hexSoldierDiv = document.createElement('div');
                     hexSoldierDiv.classList.add('soldier-div');
@@ -142,7 +171,7 @@ function addEventListenersToHexes(){
                             }else{
                                 // There is an active hex and it's not the one they clicked so move the soldiers from the active hex to this hex.
                                 let localSoldierCount = 0;
-                                if (activeHex.hexType == hexTypes.HOME){
+                                if (activeHex.hexImprovement == hexImprovementType.HOME){
                                     // There won't be a soldier count. It uses the storage
                                     localSoldierCount = activeHex.playerOwner.storage;
                                     activeHex.playerOwner.zeroOutStorage();
@@ -163,7 +192,7 @@ function addEventListenersToHexes(){
                         // Make sure they can actually move to this hex
                         if (activeHex.distanceTo(clickedHex) == 1){
                             let localSoldierCount = 0;
-                            if (activeHex.hexType == hexTypes.HOME)
+                            if (activeHex.hexImprovement == hexImprovementType.HOME)
                             {
                                 // There won't be a soldier count. It uses the storage
                                 localSoldierCount = activeHex.playerOwner.storage;
@@ -183,8 +212,8 @@ function addEventListenersToHexes(){
 
                         if (activeHex.distanceTo(clickedHex) == 1){
                             // Another player owns the hex so do some attacking math
-                            let activeArmy = activeHex.hexType === hexTypes.HOME ? activeHex.playerOwner.storage : activeHex.soldierCount;
-                            let enemyArmy = clickedHex === hexTypes.HOME ? clickedHex.playerOwner.storage : clickedHex.soldierCount;
+                            let activeArmy = activeHex.hexImprovement === hexImprovementType.HOME ? activeHex.playerOwner.storage : activeHex.soldierCount;
+                            let enemyArmy = clickedHex.hexImprovement === hexImprovementType.HOME ? clickedHex.playerOwner.storage : clickedHex.soldierCount;
 
                             // This is not the correct way to do this but it's how it's being done right now until I write a method to 'combine' hexegons
                             if (activeArmy > enemyArmy){
@@ -193,7 +222,7 @@ function addEventListenersToHexes(){
                                 let leftOverArmy = activeArmy - enemyArmy;
 
                                 // Clear out attacking
-                                if (activeHex.hexType === hexTypes.HOME){
+                                if (activeHex.hexImprovement === hexImprovementType.HOME){
                                     // They attacked from their home
                                     activeHex.playerOwner.zeroOutStorage();
                                 }else{
@@ -201,11 +230,11 @@ function addEventListenersToHexes(){
                                 }
 
                                 let oldOwner = clickedHex.playerOwner
-                                let wasHome = clickedHex.hexType === hexTypes.HOME;
+                                let wasHome = clickedHex.hexImprovement === hexImprovementType.HOME;
                                 // Now take over the hex
                                 clickedHex.playerOwner = localCP;
                                 clickedHex.soldierCount = leftOverArmy;
-                                clickedHex.hexType = hexTypes.BASIC;
+                                clickedHex.hexImprovement = hexImprovementType.NONE;
 
                                 // If it was their home, find them a new one.
                                 if (wasHome){
@@ -215,20 +244,20 @@ function addEventListenersToHexes(){
                                     if (playerHexes.length > 0){
                                         // For now randomly select a hex to make the home.
                                         let newHomeHex = playerHexes[Math.floor(Math.random() * playerHexes.length)];
-                                        newHomeHex.hexType = hexTypes.HOME;
+                                        newHomeHex.hexImprovement = hexImprovementType.HOME;
                                         newHomeHex.soldierCount = 0;
                                     }
                                 }
                             }else if (activeArmy === enemyArmy){
                                 console.log(`Armies Tie.`);
                                 // They tied, everyone dies.... ;(
-                                if (activeHex.hexType === hexTypes.HOME){
+                                if (activeHex.hexImprovement === hexImprovementType.HOME){
                                     activeHex.playerOwner.zeroOutStorage();
                                 }else{
                                     activeHex.soldierCount = 0;
                                 }
                                 
-                                if (clickedHex === hexTypes.HOME){
+                                if (clickedHex.hexImprovement === hexImprovementType.HOME){
                                     clickedHex.playerOwner.zeroOutStorage();
                                 }else{
                                     clickedHex.soldierCount = 0;
@@ -237,14 +266,14 @@ function addEventListenersToHexes(){
                             }else if (activeArmy < enemyArmy){
                                 // The active army dies
                                 console.log(`Attcking army loses.`);
-                                if (activeHex.hexType === hexTypes.HOME){
+                                if (activeHex.hexImprovement === hexImprovementType.HOME){
                                     activeHex.playerOwner.zeroOutStorage();
                                 }else{
                                     activeHex.soldierCount = 0;
                                 }
 
                                 let leftOverArmy = enemyArmy - activeArmy;
-                                if (clickedHex === hexTypes.HOME){
+                                if (clickedHex.hexImprovement === hexImprovementType.HOME){
                                     clickedHex.playerOwner.setStorageTo(leftOverArmy);
                                 }else{
                                     clickedHex.soldierCount = leftOverArmy;
@@ -260,7 +289,7 @@ function addEventListenersToHexes(){
                     // We are in the placing phase.
                     if (clickedHex.playerOwner == localCP){
                         // We don't want to do anything if the player is clicking on their HOME
-                        if (clickedHex.hexType !== hexTypes.HOME){
+                        if (clickedHex.hexImprovement !== hexImprovementType.HOME){
                             if (localCP.storage > 0){
                                 // Add one to the hex soldier count.
                                 clickedHex.soldierCount++;
@@ -340,7 +369,8 @@ function calculateCurrentPlayerStorage(){
         theWorld.worldMap.forEach((row) => {
             row.forEach((hexagon) => {
                 if (hexagon.playerOwner == currentPlayer){
-                    addToStorage++;
+                    let modifier = hexImprovementData[hexagon.hexImprovement].modifier;
+                    addToStorage += modifier;
                     if (hexagon.soldierCount > 0){
                         subtractFromStorage += hexagon.soldierCount / 2.0;
                     }
@@ -394,22 +424,27 @@ function computerPlayerLoop(){
     switch (currentPhase) {
 
         case phaseTypes.ATTACKING: 
+        console.log(`Computer player ${getCurrentPlayer().name} is attacking`)
+        
             while (maxTurns > 0){
                 // find a hex owned that has a neighbor with an unowned hex and move the soldiers into it.
                 playerOwnedHexes.forEach((hexagon) => {
                     for(let h = 0; h < 6; h++){
-                        if ((hexagon.hexType === hexTypes.HOME && currentPlayer.storage > 0) || hexagon.soldierCount > 0){
+                        
+                        if ((hexagon.hexImprovement === hexImprovementType.HOME && currentPlayer.storage > 0) || hexagon.soldierCount > 0){
                             let nayb = hexagon.neighbor(h);
                             nayb = theWorld.getHex(nayb.r, nayb.q);
                             
-                            if (nayb && nayb.playerOwner === null){
+                            if (nayb && nayb.playerOwner == null){
                                 // Move soldier from the current hex to this one.
-                                let soldierCountToMove = hexagon.hexType === hexTypes.HOME ? currentPlayer.storage : hexagon.soldierCount;
+                                let soldierCountToMove = hexagon.hexImprovement === hexImprovementType.HOME ? currentPlayer.storage : hexagon.soldierCount;
+
                                 console.log(`Moving ${soldierCountToMove} from ${hexagon} to ${nayb}`);
+
                                 nayb.soldierCount = soldierCountToMove;
                                 nayb.playerOwner = currentPlayer;
 
-                                if (hexagon.hexType === hexTypes.HOME){
+                                if (hexagon.hexImprovement === hexImprovementType.HOME){
                                     currentPlayer.zeroOutStorage();
                                 }else{
                                     hexagon.soldierCount = 0;
@@ -425,9 +460,9 @@ function computerPlayerLoop(){
         case phaseTypes.PLACING:
             while (currentPlayer.storage > 0 && maxTurns > 0){
                 //We will add to each and every hex they own until they run out
-                console.log(`Adding soldiers to computer hexes.`);
+                console.log(`Adding soldiers to computer hexes`);
                 playerOwnedHexes.forEach((hexagon) => {
-                    if (currentPlayer.storage > 0 && hexagon.hexType !== hexTypes.HOME)
+                    if (currentPlayer.storage > 0 && hexagon.hexImprovement !== hexImprovementType.HOME)
                     {
                         hexagon.soldierCount++;
                         currentPlayer.subtractFromStorage();
@@ -447,3 +482,7 @@ function clearWorld(){
     gameBoard.innerHTML = "";
 }
 
+function toggleMenu(){
+    let m = document.getElementById('creationMenu');
+    m.classList.toggle("hide");
+}

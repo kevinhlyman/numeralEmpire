@@ -1,9 +1,11 @@
-import {hexTypes} from './Types/HexType.js';
+import { hexTerrainType } from './Types/HexTerrainType.js';
+import { hexImprovementType } from './Types/HexImprovementType.js';
 class Hex {
-    #active = false;
-    #hexType = hexTypes.BASIC;
-    playerOwner = null;
-    soldierCount = 0;
+    #active;
+    #hexTerrain;
+    #hexImprovement;
+    playerOwner;
+    soldierCount;
 
     constructor(q, r, s ){
         if (q + r + s !== 0){
@@ -13,6 +15,10 @@ class Hex {
         this.q = q;
         this.r = r;
         this.s = s; // RedBlobGames says you can calculate this as -q-r. If you leave this out then it's called Axial Coordinates instead of Cube Coordinates.
+        this.#active = false;
+        this.#hexTerrain = hexTerrainType.PLAINS;
+        this.#hexImprovement = hexImprovementType.NONE;
+        this.soldierCount = 0;
     }
 
     get active(){
@@ -24,17 +30,23 @@ class Hex {
      * @param {boolean} newActive
      */
     set active(newActive){
-        this.#active = newActive
+        this.#active = newActive;
     }
 
-    get hexType(){
-        //console.log(`Returning HexType of ${this.#hexType}`)
-        return this.#hexType;
+    get hexTerrain(){
+        return this.#hexTerrain;
     }
 
-    set hexType(hexType){
-        //console.log(`Setting HexType to ${hexType}`);
-        this.#hexType = hexType;//probably should do some type checking here to make sure it's actually a valid hexType.
+    set hexTerrain(hexTerrainType){
+        this.#hexTerrain = hexTerrainType;
+    }
+
+    get hexImprovement(){
+        return this.#hexImprovement;
+    }
+
+    set hexImprovement(hexImprovementType){
+        this.#hexImprovement = hexImprovementType;
     }
 
     // Add another Hex to this one

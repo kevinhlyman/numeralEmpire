@@ -1,5 +1,5 @@
 import Hex from './Hex.js';
-import { hexTypes } from './Types/HexType.js';
+import { hexImprovementType } from './Types/HexImprovementType.js';
 
 class HexWorld{
     #worldMap = [];
@@ -31,16 +31,30 @@ class HexWorld{
 
         // This is just baked in and hard coded for now, for 4 players too.
         this.#worldMap[top][left].playerOwner = players[0];
-        this.#worldMap[top][left].hexType = hexTypes.HOME;
+        this.#worldMap[top][left].hexImprovement = hexImprovementType.HOME;
 
         this.#worldMap[top][right].playerOwner = players[1];
-        this.#worldMap[top][right].hexType = hexTypes.HOME;
+        this.#worldMap[top][right].hexImprovement = hexImprovementType.HOME;
 
         this.#worldMap[bottom][left].playerOwner = players[2];
-        this.#worldMap[bottom][left].hexType = hexTypes.HOME;
+        this.#worldMap[bottom][left].hexImprovement = hexImprovementType.HOME;
 
         this.#worldMap[bottom][right].playerOwner = players[3];
-        this.#worldMap[bottom][right].hexType = hexTypes.HOME;
+        this.#worldMap[bottom][right].hexImprovement = hexImprovementType.HOME;
+
+        // For testing hex types
+        /*
+        this.#worldMap[0][1].playerOwner = players[0];
+        this.#worldMap[0][1].hexImprovement = hexImprovementType.FARM;
+        this.#worldMap[0][2].playerOwner = players[0];
+        this.#worldMap[0][2].hexImprovement = hexImprovementType.MARKET;
+        this.#worldMap[0][3].playerOwner = players[0];
+        this.#worldMap[0][3].hexImprovement = hexImprovementType.BANK;
+        this.#worldMap[0][4].playerOwner = players[0];
+        this.#worldMap[0][4].hexImprovement = hexImprovementType.HIGHRISE;
+        this.#worldMap[0][5].playerOwner = players[0];
+        this.#worldMap[0][5].hexImprovement = hexImprovementType.TOWER;
+        */
     }
 
     get players(){
@@ -50,6 +64,7 @@ class HexWorld{
     get worldMap(){
         return this.#worldMap;
     }
+
     getHex(r, q){
         let adjustedIndex = q + Math.floor(r / 2.0);
         let hex = this.#worldMap[r] && this.#worldMap[r][adjustedIndex];
@@ -67,6 +82,10 @@ class HexWorld{
         return false;
     }
 
+    changeImprovementTypeTo(improvementType, hexagon){
+        hexagon.soldierCount = 0;
+        hexagon.hexImprovement = improvementType;
+    }
     /**
      * This function takes a player and returns a list of hexes they own.
      *
