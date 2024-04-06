@@ -30,6 +30,7 @@ body {
   border-radius: 10px;
   box-shadow: #666666 7px 7px 10px;
 }
+
 #btnMakeWorld{
   padding:10px;
   background-color: darkblue;
@@ -147,40 +148,36 @@ body {
   user-select: none;
 }
 
-/* .ocean {
-  background: linear-gradient(to bottom, #0077b6 0%, #0096c7 50%, #00b4d8 100%);
-  position: relative;
-  overflow: hidden;
+#creationMenu{
+  display:inline-block;
+}
+#creationMenu.hide{
+  display:none;
 }
 
-.ocean::before, .ocean::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+#creationMenuToggle{
+  float: right;
+  font-size: 2rem;
+  font-weight: bold;
+  cursor:pointer;
 }
 
-.ocean::before {
-  transform: rotate(-45deg);
-  background: linear-gradient(120deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
-  background-size: 50px 50px;
-  animation: move 4s linear infinite;
-  left:-600px;
-  top: -200px;
+#buildingBoard > div{
+  cursor: pointer;
+  display:inline-block;
+  color:white;
+  text-align:center;
+  vertical-align: bottom;
+  width:50px;
+  height:50px;
+  background-color:grey;
+  padding:5px;
+  border-radius:3px;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
-.ocean::after {
-  transform: rotate(45deg);
-  background: linear-gradient(60deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-size: 50px 50px;
-  animation: move 3s linear infinite reverse;
-  top: -400px;
+#buildingBoard > div > div{
+  margin-top: 7px;
+    font-size: 0.75rem;
 }
-
-@keyframes move {
-  from {background-position: 0 0;}
-  to {background-position: 100px 0;}
-} */

@@ -17,10 +17,9 @@ This is a game that will be like 'Slay' by Sean O'Connor: A very simple Civiliza
 ## Hexagon upgrades
 - Home. This is the home location that is determined at the start of the game. If your home is taken over it will move to a random hex that you already own. You do not lose.
 - Farm. A farm can be purchased and placed on any hexagon you own without an upgrade already on it. A Farm is +1. So a hexagon with a farm will generate 2 money a turn. Farm Costs 3 to buy.
-- Market. Like a Farm but +2. Cost 9.
+- Market. Like a Farm but +2. Cost 6.
 - Bank. Like a Farm but +3. Cost 12.
-- Highrise. Like a Farm but +4. Cost 15.
-- Archology. Like a Farm but +5. Cost 20. 
+- Highrise. Like a Farm but +4. Cost 24.
 - Tower. A Tower allows the hexagon to provide defense to the hexagons next to it as if whatever amount of soldiers in the tower were in any of those hexagons. So if the player has a hexagon with a tower and an army of 10 soldiers in it, then if an enemy player tries to attack a hexagon next to the tower the tower will come to it's defence and those soldiers will be attacked like they were in the hex being attacked. It's a way to try and keep enemies from sneaking through. A tower can be purchased and placed on any hexagon without an upgrade already on it. A tower keeps the hexagon from generating any income. A hex with a tower generates 0 money a turn. Tower costs 15 to buy.
 
 ## Battling & movement

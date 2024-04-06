@@ -43,6 +43,7 @@ class HexWorld{
         this.#worldMap[bottom][right].hexImprovement = hexImprovementType.HOME;
 
         // For testing hex types
+        /*
         this.#worldMap[0][1].playerOwner = players[0];
         this.#worldMap[0][1].hexImprovement = hexImprovementType.FARM;
         this.#worldMap[0][2].playerOwner = players[0];
@@ -53,6 +54,7 @@ class HexWorld{
         this.#worldMap[0][4].hexImprovement = hexImprovementType.HIGHRISE;
         this.#worldMap[0][5].playerOwner = players[0];
         this.#worldMap[0][5].hexImprovement = hexImprovementType.TOWER;
+        */
     }
 
     get players(){
@@ -80,6 +82,10 @@ class HexWorld{
         return false;
     }
 
+    changeImprovementTypeTo(improvementType, hexagon){
+        hexagon.soldierCount = 0;
+        hexagon.hexImprovement = improvementType;
+    }
     /**
      * This function takes a player and returns a list of hexes they own.
      *

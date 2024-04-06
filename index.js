@@ -1,6 +1,7 @@
 import Hex from './Hex.js';
 import { hexTerrainType } from './Types/HexTerrainType.js';
 import { hexImprovementType } from './Types/HexImprovementType.js';
+import { hexImprovementData } from './Data/HexImprovementData.js';
 import { phaseTypes } from './Types/PhaseType.js';
 import { Player, HumanPlayer, ComputerPlayer } from './Player.js';
 import HexWorld from './HexWorld.js';
@@ -19,6 +20,32 @@ const btnMakeWorld = document.getElementById('btnMakeWorld');
 btnMakeWorld.addEventListener('click', createWorld);
 const btnEndTurn = document.getElementById('btnEndTurn');
 btnEndTurn.addEventListener('click', endCurrentPlayerTurn);
+const toggleCreateMenu = document.getElementById('creationMenuToggle');
+toggleCreateMenu.addEventListener('click',toggleMenu)
+const buildingBoardElements = document.querySelectorAll('.purchase-square');
+buildingBoardElements.forEach(element => element.addEventListener('click', function(event){
+    addBuildingToBoard(event.currentTarget.getAttribute("data-improvement-type"), activeHex);
+}));
+
+function addBuildingToBoard(improvementType, hexagon){
+    if (hexagon == null){
+        return;
+    }
+    
+    if (Object.values(hexImprovementType).includes(improvementType)){
+        let currentPlayer = getCurrentPlayer();
+        let availableMoney = currentPlayer.storage;
+        let improvementPrice = hexImprovementData[improvementType].price;
+
+        if (availableMoney >= improvementPrice){
+            theWorld.changeImprovementTypeTo(improvementType, activeHex);
+            currentPlayer.subtractFromStorage(improvementPrice);
+            unsetActiveHex();
+            drawWorld();
+        }
+    }
+}
+
 
 //Create a new array of arrays based off of the what the user set in the menu fields
 function createWorld(){
@@ -342,7 +369,8 @@ function calculateCurrentPlayerStorage(){
         theWorld.worldMap.forEach((row) => {
             row.forEach((hexagon) => {
                 if (hexagon.playerOwner == currentPlayer){
-                    addToStorage++;
+                    let modifier = hexImprovementData[hexagon.hexImprovement].modifier;
+                    addToStorage += modifier;
                     if (hexagon.soldierCount > 0){
                         subtractFromStorage += hexagon.soldierCount / 2.0;
                     }
@@ -454,3 +482,7 @@ function clearWorld(){
     gameBoard.innerHTML = "";
 }
 
+function toggleMenu(){
+    let m = document.getElementById('creationMenu');
+    m.classList.toggle("hide");
+}

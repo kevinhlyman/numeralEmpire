@@ -9,7 +9,7 @@
   <body>
     <div>
       <aside id="menu">
-        <div>
+        <div id="creationMenu">
           <label for="rowsInput">Rows:</label>
           <input type="number" name="rowsInput" id="rowsInput" value="10"/>
           <label for="columnsInput">Columns:</label>
@@ -18,7 +18,15 @@
           <input type="checkbox" name="includeCoords" id="includeCoords"/>
           <button id="btnMakeWorld" type="button">Make it!</button>
         </div>
+        <i id="creationMenuToggle">+</i>
         <hr/>
+        <div id="buildingBoard">
+          <div class="purchase-square farm" data-improvement-type="farm"><div>+1<br>Farm<br>-3</div></div>
+          <div class="purchase-square market" data-improvement-type="market"><div>+2<br>Market<br>-6</div></div>
+          <div class="purchase-square bank" data-improvement-type="bank"><div>+3<br>Bank<br>-12</div></div>
+          <div class="purchase-square highrise" data-improvement-type="highrise"><div>+4<br>Highrise<br>-24</div></div>
+          <div class="purchase-square tower" data-improvement-type="tower"><div><br>Tower<br>-15</div></div>
+        </div>
         <div>
           <label>Current Player:</label>
           <div id="currentPlayer"></div>
@@ -29,9 +37,6 @@
           <label>Current Phase:</label>
           <div id="currentPhase"></div>
           <button id="btnEndTurn" type="button">End Turn</button>
-        </div>
-        <div id="playerBoard">
-          
         </div>
       </aside>
       <div id="gameBoard" class="ocean">
