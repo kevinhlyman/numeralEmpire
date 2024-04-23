@@ -42,19 +42,6 @@ class HexWorld{
         this.#worldMap[bottom][right].playerOwner = players[3];
         this.#worldMap[bottom][right].hexImprovement = hexImprovementType.HOME;
 
-        // For testing hex types
-        /*
-        this.#worldMap[0][1].playerOwner = players[0];
-        this.#worldMap[0][1].hexImprovement = hexImprovementType.FARM;
-        this.#worldMap[0][2].playerOwner = players[0];
-        this.#worldMap[0][2].hexImprovement = hexImprovementType.MARKET;
-        this.#worldMap[0][3].playerOwner = players[0];
-        this.#worldMap[0][3].hexImprovement = hexImprovementType.BANK;
-        this.#worldMap[0][4].playerOwner = players[0];
-        this.#worldMap[0][4].hexImprovement = hexImprovementType.HIGHRISE;
-        this.#worldMap[0][5].playerOwner = players[0];
-        this.#worldMap[0][5].hexImprovement = hexImprovementType.TOWER;
-        */
     }
 
     get players(){
@@ -86,6 +73,102 @@ class HexWorld{
         hexagon.soldierCount = 0;
         hexagon.hexImprovement = improvementType;
     }
+
+    combineTwoHexagons(attackingHex, defendingHex){
+        let attackingPlayer = attackingHex.playerOwner;
+        let defendingPlayer = defendingHex.playerOwner;
+
+        if (attackingPlayer == defendingPlayer){
+        // They're moving soldiers from one of their own hexes to another of their own hexes 
+        // just combine the soldiers or storage.
+            if (defendingHex.hexImprovement === hexImprovementType.HOME){
+                // If they're moving to storage make sure we put it there
+                defendingHex.playerOwner.addToStorage(attackingHex.soldierCount);
+                attackingHex.soldierCount = 0;
+            }else if (attackingHex.hexImprovement === hexImprovementType.HOME){
+                // If they're moving from storage make sure we pull it from there.
+                defendingHex.soldierCount += attackingHex.playerOwner.storage;
+                attackingHex.playerOwner.zeroOutStorage(); 
+            }else{
+                // They're moving from one regular hex to another. Combine soldier counts and clear out any improvements.
+                defendingHex.soldierCount += attackingHex.soldierCount;
+                defendingHex.hexImprovement = hexImprovementType.NONE;
+                attackingHex.soldierCount = 0;
+            }
+        }else{
+            // They are attacking a hexagon they do not own.
+            // Get the soldier or storage amounts of each hex.
+            let soldiersAttacking = attackingHex.hexImprovement === hexImprovementType.HOME ? attackingHex.playerOwner.storage : attackingHex.soldierCount;
+            let soldiersDefending = defendingHex.hexImprovement === hexImprovementType.HOME ? defendingHex.playerOwner.storage : defendingHex.soldierCount;
+            let soldiersLeftOver = soldiersAttacking - soldiersDefending;
+
+            if (defendingHex.hexImprovement !== hexImprovementType.NONE){
+                // They're attacking a place with an improvement
+                
+                if (defendingHex.hexImprovement === hexImprovementType.HOME){
+                    if (soldiersLeftOver > 0){
+                        // Attackers won
+                        defendingHex.playerOwner.zeroOutStorage();
+                        defendingHex.soldierCount = soldiersLeftOver;
+                        defendingHex.playerOwner = attackingHex.playerOwner;
+                        defendingHex.hexImprovement = hexImprovementType.NONE;
+                        attackingHex.soldierCount = 0;
+
+                        // Need to move player home somewhere
+                        let playerHexes = this.findAllHexesForPlayer(defendingPlayer);
+                        if (playerHexes.length > 0){
+                            // For now randomly select a hex to make the home.
+                            let newHomeHex = playerHexes[Math.floor(Math.random() * playerHexes.length)];
+                            newHomeHex.hexImprovement = hexImprovementType.HOME;
+                            newHomeHex.soldierCount = 0;
+                        }
+                    }else if(soldiersLeftOver < 0){
+                        // Defending won
+                        attackingHex.soldierCount = 0;
+                        defendingHex.playerOwner.setStorageTo(-soldiersLeftOver);
+                    }else{
+                        // They tied
+                        attackingHex.soldierCount = 0;
+                        defendingHex.playerOwner.zeroOutStorage();
+                    }
+                }else{
+                    // For now we're clearing out anything and just moving in. This will need to change as the Tower gets implemented
+                    defendingHex.soldierCount = soldiersAttacking;
+                    defendingHex.playerOwner = attackingPlayer;
+                    defendingHex.hexImprovement = hexImprovementType.NONE;
+                    attackingHex.soldierCount = 0;
+                }
+            }else{
+                if (soldiersLeftOver > 0){
+                    // Attackers won
+                    if (attackingHex.hexImprovement === hexImprovementType.HOME){
+                        attackingHex.playerOwner.zeroOutStorage();
+                    }else{
+                        attackingHex.soldierCount = 0;
+                    }
+                    defendingHex.soldierCount = soldiersLeftOver;
+                    defendingHex.playerOwner = attackingHex.playerOwner;
+                }else if(soldiersLeftOver < 0){
+                    // Defending won
+                    if (attackingHex.hexImprovement === hexImprovementType.HOME){
+                        attackingHex.playerOwner.zeroOutStorage();
+                    }else{
+                        attackingHex.soldierCount = 0;
+                    }
+                    defendingHex.soldierCount = -soldiersLeftOver;
+                }else{
+                    // They tied
+                    if (attackingHex.hexImprovement === hexImprovementType.HOME){
+                        attackingHex.playerOwner.zeroOutStorage();
+                    }else{
+                        attackingHex.soldierCount = 0;
+                    }
+                    defendingHex.soldierCount = 0;
+                }
+            }
+        }
+    }
+
     /**
      * This function takes a player and returns a list of hexes they own.
      *

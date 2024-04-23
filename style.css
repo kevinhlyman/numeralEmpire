@@ -38,6 +38,7 @@ body {
   border-radius: 10px;
 }
 #btnEndTurn{
+  cursor: pointer;
   float: right;
   padding: 10px;
   background-color: green;
