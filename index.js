@@ -10,6 +10,7 @@ import HexWorld from './HexWorld.js';
 let theWorld;
 let currentTurn = 0;
 let activeHex = null;
+let gameOver = false;
 
 document.addEventListener('DOMContentLoaded',function(){
     createWorld();
@@ -26,7 +27,13 @@ const buildingBoardElements = document.querySelectorAll('.purchase-square');
 buildingBoardElements.forEach(element => element.addEventListener('click', function(event){
     addBuildingToBoard(event.currentTarget.getAttribute("data-improvement-type"), activeHex);
 }));
+const closeModalButton = document.getElementById('closeGameOverModal');
+closeModalButton.addEventListener('click',function(){
+    let gameOverModal = document.getElementById('gameOverModal');
+    gameOverModal.style.display = 'none';
+});
 
+// Add a building to the game board.
 function addBuildingToBoard(improvementType, hexagon){
     if (hexagon == null){
         return;
@@ -131,6 +138,7 @@ function drawPointyWorld(){
     });
 }
 
+// Add the event listeners to the hexes of the world.
 function addEventListenersToHexes(){
     const hexes = document.querySelectorAll('.hexagon');
 
@@ -199,11 +207,13 @@ function addEventListenersToHexes(){
     });
 }
 
+// Change the active hex to be the one passed in.
 function setActiveHex(hexagon){
     hexagon.active = true;
     activeHex = hexagon;
 }
 
+// Unset the active hex so no hex is active.
 function unsetActiveHex(){
     if(activeHex !== null){
         activeHex.active = false;
@@ -211,6 +221,7 @@ function unsetActiveHex(){
     }
 }
 
+// Change the current player display to show the active current player.
 function displayCurrentPlayer(){
     let pdiv = document.getElementById('currentPlayer');
     let currentPlayer = getCurrentPlayer();
@@ -218,14 +229,17 @@ function displayCurrentPlayer(){
     pdiv.style.backgroundColor = currentPlayer.color
 }
 
+// Get the current turn.
 function getCurrentTurn(){
     return currentTurn;
 }
 
+// Get the current round by doing math with the current turn and amount of players.
 function getCurrentRound(){
     return Math.floor(currentTurn / (theWorld.players.length * 2)) + 1;
 }
 
+// Get the current phase by doing math with the current turn and amount of players.
 function getCurrentPhase(){
     let currentPhase = (currentTurn % (theWorld.players.length * 2)) < theWorld.players.length ? 1 : 2;
     
@@ -236,21 +250,26 @@ function getCurrentPhase(){
     }
 }
 
+// Update the display of the current turn.
 function displayCurrentTurn(){
     let tdiv = document.getElementById('currentTurn');
     tdiv.innerHTML = currentTurn;
 
 }
+
+// Update the display of the current round.
 function displayCurrentRound(){
     let rdiv = document.getElementById('currentRound');
     rdiv.innerHTML  = getCurrentRound();
 }
 
+// Update the display of the current phase. 
 function displayCurrentPhase(){
     let phdiv = document.getElementById('currentPhase');
     phdiv.innerHTML = getCurrentPhase();
 }
 
+// Update the current players storage based on hexes owned, hex upgrades, and soldier count.
 function calculateCurrentPlayerStorage(){
     // We only do this on the Placing phase
     if (getCurrentPhase() === phaseTypes.PLACING){
@@ -275,37 +294,85 @@ function calculateCurrentPlayerStorage(){
     }
 }
 
+// End the current players turn and update a bunch of stuff.
 function endCurrentPlayerTurn(){
-    console.log(`Ending player ${getCurrentPlayer().name} turn`);
-    increaseCurrentTurn();
-    displayCurrentPlayer();
-    displayCurrentTurn()
-    displayCurrentRound();
-    displayCurrentPhase();
-    calculateCurrentPlayerStorage();
-    drawWorld();
 
-    if (getCurrentPlayer() instanceof ComputerPlayer){
-        setTimeout(function(){
-            // Waiting 1 second so the player can see the computers "play".
-            computerPlayerLoop();
-        }, 1000);
-        
+    checkForGameOver();
+
+    if (gameOver){
+        displayGameOver();
+    }else{
+
+        console.log(`Ending player ${getCurrentPlayer().name} turn`);
+        increaseCurrentTurn();
+        displayCurrentPlayer();
+        displayCurrentTurn()
+        displayCurrentRound();
+        displayCurrentPhase();
+        calculateCurrentPlayerStorage();
+        drawWorld();
+
+        if (getCurrentPlayer() instanceof ComputerPlayer){
+            setTimeout(function(){
+                // Waiting 1 second so the player can see the computers "play".
+                computerPlayerLoop();
+            }, 1000);
+        } 
     }
 }
 
+// See if the human player won or lost based on game conditions.
+function checkForGameOver(){
+
+    let hexCount = 0;
+    let playerOwnedHexCount = 0;
+
+    // Count up hexes and see if the human player owns all of them or none of them
+    theWorld.worldMap.forEach((row) => {
+        row.forEach((hexagon) => {
+            hexCount++;
+            if (hexagon.playerOwner instanceof HumanPlayer){
+                playerOwnedHexCount++; // This only works because there is only 1 human player.
+            }
+        });
+    });
+
+    if (hexCount === playerOwnedHexCount){
+        gameOver = true;
+        let gameOverMessage = document.getElementById('gameOverMessage');
+        gameOverMessage.innerHTML = "You Win!";
+    }
+
+    if (playerOwnedHexCount === 0){
+        gameOver = true;
+        let gameOverMessage = document.getElementById('gameOverMessage');
+        gameOverMessage.innerHTML = "You Lose.";
+    } 
+}
+
+// Show game over
+function displayGameOver(){
+    // Figure out if they won or lost.
+    let gameOverModal = document.getElementById('gameOverModal');
+    gameOverModal.style.display = 'block';
+}
+
+// Get the player who's turn it currently is.
 function getCurrentPlayer(){
     return theWorld.players[getCurrentTurn() % getPlayerCount()];
 }
 
+// Get the number of players in the game.
 function getPlayerCount(){
     return theWorld.players.length;
 }
 
+// Increase the current turn count by 1.
 function increaseCurrentTurn(){
     currentTurn++;
 }
 
+// The player loop for the current computer player.
 function computerPlayerLoop(){
     console.log(`Computer player ${getCurrentPlayer().name} is playing`);
     let currentPlayer = getCurrentPlayer();
@@ -388,6 +455,7 @@ function clearWorld(){
     gameBoard.innerHTML = "";
 }
 
+// Hide or show the Menu based on if it's hidden or shown already.
 function toggleMenu(){
     let m = document.getElementById('creationMenu');
     m.classList.toggle("hide");
