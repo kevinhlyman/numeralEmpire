@@ -115,6 +115,8 @@ export class GameState {
             });
         });
 
+        console.log('HexCount', hexCount);
+        console.log('PlayerOwnedHexCount', playerOwnedHexCount);
         if (hexCount === playerOwnedHexCount) {
             this.gameOver = true;
             this.gameOverMessage = "Human Wins!";

@@ -19,6 +19,7 @@ class Hex {
         this.#hexTerrain = hexTerrainType.PLAINS;
         this.#hexImprovement = hexImprovementType.NONE;
         this.soldierCount = 0;
+        this.playerOwner = null;
         this.hasMovedThisTurn = false;  // Add this new property
     }
 
@@ -73,7 +74,7 @@ class Hex {
 
     // String representation of the Hex
     toString() {
-        return `q:${this.q}, r:${this.r}, s:${this.s}`;
+        return `q:${this.q}, r:${this.r}, s:${this.s}, ${this.playerOwner}, ${this.soldierCount}`;
     }
 
     // Add a method to reset the movement flag

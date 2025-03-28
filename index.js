@@ -192,19 +192,15 @@ function calculateCurrentPlayerStorage() {
 
 // End the current players turn and update a bunch of stuff.
 function endCurrentPlayerTurn() {
-    // Unset any selected hex before changing turns
+    // Unset any selected hex before changing turns and reset has moved
     gameState.unsetActiveHex();
+    theWorld.resetMovementForPlayer(gameState.getCurrentPlayer());
 
     if (gameState.checkForGameOver(theWorld)) {
         displayGameOver();
     } else {
         console.log(`Ending player ${gameState.getCurrentPlayer().name} turn`);
         gameState.increaseCurrentTurn();
-        
-        // If we're entering the attacking phase for a player, reset their movement
-        if (gameState.isAttackingPhase()) {
-            theWorld.resetMovementForPlayer(gameState.getCurrentPlayer());
-        }
         
         displayCurrentPlayer();
         displayCurrentTurn();

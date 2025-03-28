@@ -36,6 +36,9 @@ export class WorldRenderer {
                         let hexSoldierDiv = document.createElement('div');
                         hexSoldierDiv.classList.add('soldier-div');
                         hexSoldierDiv.innerHTML = hexagon.soldierCount;
+                        if (hexagon.hasMovedThisTurn) {
+                            hexSoldierDiv.classList.add('has-moved');
+                        }
                         hexagonDiv.appendChild(hexSoldierDiv);
                     }
                 } else {
