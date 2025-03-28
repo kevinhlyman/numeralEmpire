@@ -1,5 +1,4 @@
 import { hexImprovementType } from './Types/HexImprovementType.js';
-import { HumanPlayer } from './Player.js';
 
 export class WorldRenderer {
     constructor(gameBoard) {

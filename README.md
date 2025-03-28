@@ -36,4 +36,4 @@ This is a game that will be like 'Slay' by Sean O'Connor: A very simple Civiliza
 
 ## Winning
 - The last player with a Home hexagon is the winner.
-- You can also set a rounds limit of N rounds. If you chose 100 rounds whatever player has the most soldiers at the end of 100 rounds wins.
+- You can also set a rounds limit of N rounds. If you chose 100 rounds whatever player has the most soldiers at the end of around 100 rounds wins. The chosen rounds is not exact but somewhere close to that value. This way you don't know when the game will end but you have a general idea.
