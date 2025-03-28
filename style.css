@@ -240,3 +240,6 @@ body > div {
 .purchase-square.selected {
   animation: blink 1s linear infinite;
 }
+.has-moved {
+  opacity: 0.5;
+}
