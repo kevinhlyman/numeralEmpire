@@ -1,9 +1,6 @@
-import Hex from './Hex.js';
-import { hexTerrainType } from './Types/HexTerrainType.js';
 import { hexImprovementType } from './Types/HexImprovementType.js';
 import { hexImprovementData } from './Data/HexImprovementData.js';
-import { phaseTypes } from './Types/PhaseType.js';
-import { Player, HumanPlayer, ComputerPlayer } from './Player.js';
+import { HumanPlayer, ComputerPlayer } from './Player.js';
 import HexWorld from './HexWorld.js';
 import { WorldRenderer } from './WorldRenderer.js';
 import { GameState } from './modules/GameState.js';
@@ -69,18 +66,19 @@ function createWorld() {
 
     let desiredRows = document.getElementById('rowsInput').value;
     let desiredColumns = document.getElementById('columnsInput').value;
+    let roundsToPlay = document.getElementById('roundsInput').value;
 
-    theWorld = new HexWorld(desiredColumns, desiredRows, players);
+    theWorld = new HexWorld(desiredColumns, desiredRows, players, roundsToPlay);
     computerAI = new ComputerPlayerAI(theWorld);
     worldRenderer = new WorldRenderer(gameBoard);
 
-  displayCurrentPlayer();
-  calculateCurrentPlayerStorage();
-  displayCurrentTurn();
-  displayCurrentRound();
-  displayCurrentPhase();
-  drawWorld();
-  toggleMenu();
+    displayCurrentPlayer();
+    calculateCurrentPlayerStorage();
+    displayCurrentTurn();
+    displayCurrentRound();
+    displayCurrentPhase();
+    drawWorld();
+    toggleMenu();
 }
 
 //Draw a new map based on what is in the wordMap array
@@ -132,35 +130,11 @@ function addEventListenersToHexes() {
     });
 }
 
-// Change the active hex to be the one passed in.
-function setActiveHex(hexagon) {
-  hexagon.active = true;
-  activeHex = hexagon;
-}
-
-// Unset the active hex so no hex is active.
-function unsetActiveHex() {
-  if (activeHex !== null) {
-    activeHex.active = false;
-    activeHex = null;
-  }
-}
-
 // Change the current player display to show the active current player.
 function displayCurrentPlayer(){
     let pdiv = document.getElementById('currentPlayer');
     pdiv.innerHTML = gameState.getCurrentPlayer().name;
     pdiv.style.backgroundColor = gameState.getCurrentPlayer().color;
-}
-
-// Get the current turn.
-function getCurrentTurn() {
-    return gameState.getCurrentTurn();
-}
-
-// Get the current round by doing math with the current turn and amount of players.
-function getCurrentRound() {
-    return gameState.getCurrentRound();
 }
 
 // Get the current phase by doing math with the current turn and amount of players.
@@ -245,26 +219,11 @@ function getCurrentPlayer() {
     return gameState.getCurrentPlayer();
 }
 
-// Get the number of players in the game.
-function getPlayerCount() {
-    return gameState.getPlayerCount();
-}
-
-// Increase the current turn count by 1.
-function increaseCurrentTurn() {
-    gameState.increaseCurrentTurn();
-}
-
 // The player loop for the current computer player.
 function computerPlayerLoop() {
     computerAI.playTurn(getCurrentPlayer(), getCurrentPhase());
     drawWorld();
     endCurrentPlayerTurn();
-}
-
-// This just clears the gameBoard div.
-function clearWorld() {
-  gameBoard.innerHTML = "";
 }
 
 // Hide or show the Menu based on if it's hidden or shown already.
