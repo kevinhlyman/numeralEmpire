@@ -190,6 +190,19 @@ class HexWorld{
         });
         return playerHexes;
     }
+
+    getAdjacentHexes(hexagon) {
+        let adjacentHexes = [];
+        // Check all 6 directions
+        for (let direction = 0; direction < 6; direction++) {
+            let neighborHex = hexagon.neighbor(direction);
+            let hex = this.getHex(neighborHex.r, neighborHex.q);
+            if (hex) {
+                adjacentHexes.push(hex);
+            }
+        }
+        return adjacentHexes;
+    }
 }
 
 export default HexWorld;
