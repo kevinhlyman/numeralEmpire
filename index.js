@@ -23,34 +23,29 @@ btnEndTurn.addEventListener('click', endCurrentPlayerTurn);
 const toggleCreateMenu = document.getElementById('creationMenuToggle');
 toggleCreateMenu.addEventListener('click',toggleMenu)
 const buildingBoardElements = document.querySelectorAll('.purchase-square');
+let selectedImprovementType = null;
+
+// Modify the building board click handlers
 buildingBoardElements.forEach(element => element.addEventListener('click', function(event){
-    addBuildingToBoard(event.currentTarget.getAttribute("data-improvement-type"), gameState.getActiveHex());
+    if (gameState.isPlacingPhase()) {
+        // Remove selected class from all buildings
+        buildingBoardElements.forEach(el => el.classList.remove('selected'));
+        
+        // If clicking the already selected building, deselect it
+        if (selectedImprovementType === event.currentTarget.getAttribute("data-improvement-type")) {
+            selectedImprovementType = null;
+        } else {
+            // Select the new building
+            selectedImprovementType = event.currentTarget.getAttribute("data-improvement-type");
+            event.currentTarget.classList.add('selected');
+        }
+    }
 }));
 const closeModalButton = document.getElementById('closeGameOverModal');
 closeModalButton.addEventListener('click',function(){
     let gameOverModal = document.getElementById('gameOverModal');
     gameOverModal.style.display = 'none';
 });
-
-// Add a building to the game board.
-function addBuildingToBoard(improvementType, hexagon) {
-    if (hexagon == null) {
-        return;
-    }
-    
-    if (Object.values(hexImprovementType).includes(improvementType)) {
-        let currentPlayer = getCurrentPlayer();
-        let availableMoney = currentPlayer.storage;
-        let improvementPrice = hexImprovementData[improvementType].price;
-
-        if (availableMoney >= improvementPrice) {
-            theWorld.changeImprovementTypeTo(improvementType, gameState.getActiveHex());
-            currentPlayer.subtractFromStorage(improvementPrice);
-            gameState.unsetActiveHex();
-            drawWorld();
-        }
-    }
-}
 
 //Create a new array of arrays based off of the what the user set in the menu fields
 function createWorld() {
@@ -96,9 +91,10 @@ function addEventListenersToHexes() {
             let r = +this.getAttribute('r');
             let clickedHex = theWorld.getHex(r, q);
             let localCP = getCurrentPlayer();
-            let activeHex = gameState.getActiveHex();
             
             if (gameState.isAttackingPhase()) {
+                // We are in teh attacking phase.
+                let activeHex = gameState.getActiveHex();
                 if (activeHex == null) {
                     if (clickedHex.playerOwner == localCP) {
                         gameState.setActiveHex(clickedHex);
@@ -114,12 +110,20 @@ function addEventListenersToHexes() {
             } else if (gameState.isPlacingPhase()) {
                 // We are in the placing phase.
                 if (clickedHex.playerOwner == localCP) {
-                    // We can only add soldiers to hexagons without an improvement...for now
-                    if (clickedHex.hexImprovement === hexImprovementType.NONE) {
+                    if (selectedImprovementType) {
+                        // Try to place the building
+                        let improvementPrice = hexImprovementData[selectedImprovementType].price;
+                        if (localCP.storage >= improvementPrice && clickedHex.hexImprovement === hexImprovementType.NONE) {
+                            theWorld.changeImprovementTypeTo(selectedImprovementType, clickedHex);
+                            localCP.subtractFromStorage(improvementPrice);
+                            // Remove selected class from the building that was just placed
+                            buildingBoardElements.forEach(el => el.classList.remove('selected'));
+                            selectedImprovementType = null; // Reset selection after placement
+                        }
+                    } else if (clickedHex.hexImprovement === hexImprovementType.NONE) {
+                        // Handle soldier placement (existing logic)
                         if (localCP.storage > 0) {
-                            // Add one to the hex soldier count.
                             clickedHex.soldierCount++;
-                            // Subtract one from the current players storage.
                             localCP.subtractFromStorage();
                         }
                     }

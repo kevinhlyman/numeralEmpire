@@ -107,7 +107,7 @@ body > div {
     opacity: 1;
   }
   50% {
-    opacity: 0;
+    opacity: 0.60;
   }
   100% {
     opacity: 1;
@@ -235,4 +235,8 @@ body > div {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+.purchase-square.selected {
+  animation: blink 1s linear infinite;
 }
