@@ -202,18 +202,31 @@ class HexWorld {
   findAllHexesForPlayer(player) {
     // I think later on we'll probably want to just keep track of this as things go instead of trying to calculate it every time.
 
-    // For now just loop through the world 1 by 1 and find all the hexes that belong to this player.
-    let playerHexes = [];
-    // This is a definite place for optimization
-    this.#worldMap.forEach((row) => {
-      row.forEach((hexagon) => {
-        if (hexagon.playerOwner == player) {
-          playerHexes.push(hexagon);
+        // For now just loop through the world 1 by 1 and find all the hexes that belong to this player.
+        let playerHexes = [];
+        // This is a definite place for optimization
+        this.#worldMap.forEach((row) => {
+            row.forEach((hexagon) => {
+                if (hexagon.playerOwner == player){
+                    playerHexes.push(hexagon);
+                }
+            });
+        });
+        return playerHexes;
+    }
+
+    getAdjacentHexes(hexagon) {
+        let adjacentHexes = [];
+        // Check all 6 directions
+        for (let direction = 0; direction < 6; direction++) {
+            let neighborHex = hexagon.neighbor(direction);
+            let hex = this.getHex(neighborHex.r, neighborHex.q);
+            if (hex) {
+                adjacentHexes.push(hex);
+            }
         }
-      });
-    });
-    return playerHexes;
-  }
+        return adjacentHexes;
+    }
 }
 
 export default HexWorld;
