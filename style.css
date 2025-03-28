@@ -243,3 +243,44 @@ body > div {
 .has-moved {
   opacity: 0.5;
 }
+
+#buildingBoard {
+  width:39%;
+}
+#playerStats{
+  width:57%;
+  background-color: grey;
+  border-radius: 5px;
+}
+#playerStats, #buildingBoard {
+  display:inline-block;
+  vertical-align:middle;
+}
+.player-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  font-size: 0.8rem;
+}
+
+.stat-header {
+  font-weight: bold;
+  padding: 2px;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+}
+
+.player-stat-row {
+  display: contents;
+}
+
+.player-stat-row > div {
+  padding: 2px;
+  text-align: center;
+}
+
+.player-name {
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+}

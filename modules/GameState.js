@@ -46,6 +46,10 @@ export class GameState {
     setPlayers(players) {
         this.players = players;
     }
+    
+    getPlayers() {
+        return this.players;
+    }
 
     isComputerPlayer() {
         return this.getCurrentPlayer() instanceof ComputerPlayer;
