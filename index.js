@@ -73,6 +73,7 @@ function createWorld() {
     displayCurrentRound();
     displayCurrentPhase();
     drawWorld();
+    updatePlayerStats();
     toggleMenu();
 }
 
@@ -208,6 +209,7 @@ function endCurrentPlayerTurn() {
         displayCurrentPhase();
         calculateCurrentPlayerStorage();
         drawWorld();
+        updatePlayerStats();
 
         if (gameState.isComputerPlayer()) {
             setTimeout(function() {
@@ -240,4 +242,86 @@ function computerPlayerLoop() {
 function toggleMenu() {
   let m = document.getElementById("creationMenu");
   m.classList.toggle("hide");
+}
+
+function updatePlayerStats() {
+    const statsGrid = document.querySelector('.player-stats-grid');
+    // Clear existing player rows
+    const existingRows = document.querySelectorAll('.player-stat-row');
+    existingRows.forEach(row => row.remove());
+
+    gameState.getPlayers().forEach(player => {
+        if (!player.alive) return;
+
+        const hexCount = countPlayerHexes(player);
+        const income = calculatePlayerIncome(player);
+        const soldiers = countPlayerSoldiers(player);
+
+        const row = document.createElement('div');
+        row.className = 'player-stat-row';
+        
+        // Player name with background color
+        const nameDiv = document.createElement('div');
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'player-name';
+        nameSpan.textContent = player.name;
+        nameSpan.style.backgroundColor = player.color;
+        nameDiv.appendChild(nameSpan);
+
+        // Other stats
+        const hexesDiv = document.createElement('div');
+        hexesDiv.textContent = hexCount;
+        
+        const incomeDiv = document.createElement('div');
+        incomeDiv.textContent = `+${income}`;
+        
+        const soldiersDiv = document.createElement('div');
+        soldiersDiv.textContent = soldiers;
+        
+        const storageDiv = document.createElement('div');
+        storageDiv.textContent = player.storage;
+
+        // Append all divs
+        row.appendChild(nameDiv);
+        row.appendChild(hexesDiv);
+        row.appendChild(incomeDiv);
+        row.appendChild(soldiersDiv);
+        row.appendChild(storageDiv);
+
+        statsGrid.appendChild(row);
+    });
+}
+
+function countPlayerHexes(player) {
+    let count = 0;
+    theWorld.worldMap.forEach(row => {
+        row.forEach(hex => {
+            if (hex.playerOwner === player) count++;
+        });
+    });
+    return count;
+}
+
+function calculatePlayerIncome(player) {
+    let income = 0;
+    theWorld.worldMap.forEach(row => {
+        row.forEach(hex => {
+            if (hex.playerOwner === player) {
+                income += hexImprovementData[hex.hexImprovement].modifier;
+            }
+        });
+    });
+    return income;
+}
+
+function countPlayerSoldiers(player) {
+    let count = 0;
+    theWorld.worldMap.forEach(row => {
+        row.forEach(hex => {
+            if (hex.playerOwner === player) {
+                count += hex.soldierCount;
+            }
+        });
+    });
+    return count;
 }
