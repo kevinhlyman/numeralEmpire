@@ -104,13 +104,26 @@ class HexWorld {
         attackingHex.soldierCount = 0;
       } else if (attackingHex.hexImprovement === hexImprovementType.HOME) {
         // If they're moving from storage make sure we pull it from there.
+        let initialDefendingSoldierCount = defendingHex.soldierCount;
         defendingHex.soldierCount += attackingHex.playerOwner.storage;
         attackingHex.playerOwner.zeroOutStorage();
+
+        if (initialDefendingSoldierCount <= 0) {
+            // If there aren't any soldiers in the hex we're moving to then we need to mark the hex as moved.
+            defendingHex.hasMovedThisTurn = true;
+        }
       } else {
         // They're moving from one regular hex to another. Combine soldier counts and clear out any improvements.
+        let initialDefendingSoldierCount = defendingHex.soldierCount;
         defendingHex.soldierCount += attackingHex.soldierCount;
         defendingHex.hexImprovement = hexImprovementType.NONE;
         attackingHex.soldierCount = 0;
+
+        if (initialDefendingSoldierCount <= 0) {
+            // If there aren't any soldiers in the hex we're moving to then we need to mark the hex as moved.
+            defendingHex.hasMovedThisTurn = true;
+        }
+        
       }
     } else {
       // They are attacking a hexagon they do not own.
@@ -172,6 +185,7 @@ class HexWorld {
           }
           defendingHex.soldierCount = soldiersLeftOver;
           defendingHex.playerOwner = attackingHex.playerOwner;
+          defendingHex.hasMovedThisTurn = true;
         } else if (soldiersLeftOver < 0) {
           // Defending won
           if (attackingHex.hexImprovement === hexImprovementType.HOME) {
@@ -227,6 +241,17 @@ class HexWorld {
         }
         return adjacentHexes;
     }
+
+  // Add a new method to reset all hexes' movement for a specific player
+  resetMovementForPlayer(player) {
+    this.#worldMap.forEach(row => {
+      row.forEach(hex => {
+        if (hex.playerOwner === player) {
+          hex.resetMovement();
+        }
+      });
+    });
+  }
 }
 
 export default HexWorld;
