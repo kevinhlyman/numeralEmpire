@@ -96,7 +96,8 @@ function addEventListenersToHexes() {
                 // We are in teh attacking phase.
                 let activeHex = gameState.getActiveHex();
                 if (activeHex == null) {
-                    if (clickedHex.playerOwner == localCP) {
+                    // Only allow selecting hexes that haven't moved this turn
+                    if (clickedHex.playerOwner == localCP && !clickedHex.hasMovedThisTurn) {
                         gameState.setActiveHex(clickedHex);
                     }
                 } else {
@@ -191,11 +192,20 @@ function calculateCurrentPlayerStorage() {
 
 // End the current players turn and update a bunch of stuff.
 function endCurrentPlayerTurn() {
+    // Unset any selected hex before changing turns
+    gameState.unsetActiveHex();
+
     if (gameState.checkForGameOver(theWorld)) {
         displayGameOver();
     } else {
         console.log(`Ending player ${gameState.getCurrentPlayer().name} turn`);
         gameState.increaseCurrentTurn();
+        
+        // If we're entering the attacking phase for a player, reset their movement
+        if (gameState.isAttackingPhase()) {
+            theWorld.resetMovementForPlayer(gameState.getCurrentPlayer());
+        }
+        
         displayCurrentPlayer();
         displayCurrentTurn();
         displayCurrentRound();
