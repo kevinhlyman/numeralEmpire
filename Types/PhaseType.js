@@ -1,4 +1,4 @@
 export const phaseTypes = {
-    PLACING: 'Placing',
+    PURCHASING: 'Purchasing',
     ATTACKING: 'Attacking'
 }

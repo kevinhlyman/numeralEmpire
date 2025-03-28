@@ -11,8 +11,8 @@ export class ComputerPlayerAI {
         let playerOwnedHexes = this.world.findAllHexesForPlayer(currentPlayer);
         if (currentPhase === phaseTypes.ATTACKING) {
             this.handleAttackingPhase(currentPlayer, playerOwnedHexes);
-        } else if (currentPhase === phaseTypes.PLACING) {
-            this.handlePlacingPhase(currentPlayer, playerOwnedHexes);
+        } else if (currentPhase === phaseTypes.PURCHASING) {
+            this.handlePurchasingPhase(currentPlayer, playerOwnedHexes);
         }
     }
 
@@ -38,7 +38,7 @@ export class ComputerPlayerAI {
         });
     }
 
-    handlePlacingPhase(currentPlayer, playerOwnedHexes) {
+    handlePurchasingPhase(currentPlayer, playerOwnedHexes) {
         while (currentPlayer.storage > 0 && playerOwnedHexes.length > 1) {
             console.log(`Adding soldiers to computer hexes`);
             console.log(`CurrentPlayer Storage:${currentPlayer.storage}`);
