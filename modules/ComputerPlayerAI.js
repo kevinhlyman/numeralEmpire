@@ -9,7 +9,6 @@ export class ComputerPlayerAI {
     playTurn(currentPlayer, currentPhase) {
         console.log(`Computer player ${currentPlayer.name} is playing`);
         let playerOwnedHexes = this.world.findAllHexesForPlayer(currentPlayer);
-        console.log('player owned hexes', playerOwnedHexes);
         if (currentPhase === phaseTypes.ATTACKING) {
             this.handleAttackingPhase(currentPlayer, playerOwnedHexes);
         } else if (currentPhase === phaseTypes.PLACING) {
