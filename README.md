@@ -30,8 +30,8 @@ This is a game that will be like 'Slay' by Sean O'Connor: A very simple Civiliza
 - A soldier can be added to any owned hexagon anywhere in the world even if there is no direct line from the home hexagon to the hexagon in question.
 
 ## Turns, Rounds, and Phases
-- Turns do not mean a single move. If it is a player's turn and it is the 'Placing' phase then the player can place any/all of their units/buildings. If it is their turn and it is the 'Attacking' Phase then they get to attack with any/all of their units.
-- Phases come in two flavors. There is the 'Placing' phase where players place down their units/buildings and there is the 'Attacking' phase wehre players move their units to another Hex. Each player takes ther turn in a phase and then the phase will move on to the next phase. 
+- Turns do not mean a single move. If it is a player's turn and it is the 'Purchasing' phase then the player can purchase and place any/all of their units/buildings. If it is their turn and it is the 'Attacking' Phase then they get to attack with any/all of their units.
+- Phases come in two flavors. There is the 'Purchasing' phase where players purchase and place their units/buildings and there is the 'Attacking' phase where players move their units to another Hex. Each player takes their turn in a phase and then the phase will move on to the next phase. 
 - Rounds. A round consists of two phases. Each player takes their turn in the active phase and when done it moves to the next player.
 
 ## Winning

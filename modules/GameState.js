@@ -20,11 +20,11 @@ export class GameState {
 
     getCurrentPhase() {
         let currentPhase = (this.currentTurn % (this.getPlayerCount() * 2)) < this.getPlayerCount() ? 1 : 2;
-        return currentPhase === 1 ? phaseTypes.PLACING : phaseTypes.ATTACKING;
+        return currentPhase === 1 ? phaseTypes.PURCHASING : phaseTypes.ATTACKING;
     }
 
-    isPlacingPhase() {
-        return this.getCurrentPhase() === phaseTypes.PLACING;
+    isPurchasingPhase() {
+        return this.getCurrentPhase() === phaseTypes.PURCHASING;
     }
 
     isAttackingPhase() {

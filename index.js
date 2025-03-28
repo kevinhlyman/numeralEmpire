@@ -27,7 +27,7 @@ let selectedImprovementType = null;
 
 // Modify the building board click handlers
 buildingBoardElements.forEach(element => element.addEventListener('click', function(event){
-    if (gameState.isPlacingPhase()) {
+    if (gameState.isPurchasingPhase()) {
         // Remove selected class from all buildings
         buildingBoardElements.forEach(el => el.classList.remove('selected'));
         
@@ -107,8 +107,8 @@ function addEventListenersToHexes() {
                     }
                     gameState.unsetActiveHex();
                 }
-            } else if (gameState.isPlacingPhase()) {
-                // We are in the placing phase.
+            } else if (gameState.isPurchasingPhase()) {
+                // We are in the purchasing phase.
                 if (clickedHex.playerOwner == localCP) {
                     if (selectedImprovementType) {
                         // Try to place the building
@@ -166,8 +166,8 @@ function displayCurrentPhase() {
 
 // Update the current players storage based on hexes owned, hex upgrades, and soldier count.
 function calculateCurrentPlayerStorage() {
-    // We only do this on the Placing phase
-    if (gameState.isPlacingPhase()) {
+    // We only do this on the Purchasing phase
+    if (gameState.isPurchasingPhase()) {
         let currentPlayer = getCurrentPlayer();
         let addToStorage = 0;
         let subtractFromStorage = 0.0;
