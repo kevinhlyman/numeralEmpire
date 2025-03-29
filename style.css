@@ -17,7 +17,7 @@
 
 html {
   background-color: var(--ocean-background);
-  background-image: url("../images/oceanTile2.jpg");
+  background-image: url("https://kevinhlyman.github.io/numeralEmpire/images/oceanTile2.jpg");/*serving from pages even locally because github is moving things to /numberEmpire for some reason adn I can't get it to find the image otherwise*/
 }
 
 body {
