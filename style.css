@@ -6,14 +6,18 @@
   --empty-hex: #ffffff;
   --empty-hex-hover: #fafad2;
   --soldier-count: #ffffff;
-  --player1-background: #1e90ff;
-  --player2-background: firebrick;
-  --player3-background: forestgreen;
-  --player4-background: khaki;
+  --player1-background: #ff651e;
+  --player2-background: #a41623;
+  --player3-background: #8ac926;
+  --player4-background: #ffca3a;
+  --player5-background: #1982c4;
+  --player6-background: #6a4c93;
+  --player7-background: #ff595e;
 }
 
 html {
   background-color: var(--ocean-background);
+  background-image: url("/images/oceanTile2.jpg");
 }
 
 body {

@@ -13,6 +13,8 @@ class HexWorld {
     let right = desiredColumns - 1;
     let top = 0;
     let bottom = desiredRows - 1;
+    let middle = Math.floor(desiredColumns / 2.0);
+    let center = Math.floor(desiredRows / 2.0);
 
     // Cycle through and make our 'world'
     // I think the for loops will need to change based on the hex type, flat or pointy
@@ -29,33 +31,85 @@ class HexWorld {
     }
 
     this.#players = players;
-    roundsToPlay = roundsToPlay * 1;
-    // Figure out how many rounds to play. If rounds to play is 0 then that means ther is no limit.
-    if (roundsToPlay !== 0) {
-      // What we want is to not set the turn count limit to exactly what the user said.
-      // But to instead set it to something random that's relatively close to what they said.
-      // This way the player doesn't actually know when the game ends, but does have a general idea.
-      // Think kind of like a jack in the box. It could be any turn now....
-      let k = Math.ceil(roundsToPlay * 0.1);
-      let min = roundsToPlay - k;
-      let max = roundsToPlay + k;
-      let randomRoundsToPlay =
-        Math.floor(Math.random() * (max - min + 1)) + min;
-      this.#roundsToPlay = randomRoundsToPlay;
+    this.#roundsToPlay = this.calculateRoundsToPlay(roundsToPlay);
+
+    // Define starting positions based on number of players
+    let startingPositions;
+    switch (players.length) {
+      case 2:
+        startingPositions = [
+          { r: top, q: left },      // Player 1 (Human)
+          { r: bottom, q: right },   // Player 2 (opposite corner)
+        ];
+        break;
+      case 3:
+        startingPositions = [
+          { r: top, q: left },      // Player 1
+          { r: bottom, q: right },   // Player 2
+          { r: top, q: right },      // Player 3
+        ];
+        break;
+      case 4:
+        startingPositions = [
+          { r: top, q: left },      // Player 1
+          { r: top, q: right },     // Player 2
+          { r: bottom, q: left },   // Player 3
+          { r: bottom, q: right },  // Player 4
+        ];
+        break;
+      case 5:
+        startingPositions = [
+          { r: top, q: left },      // Player 1
+          { r: top, q: right },     // Player 2
+          { r: bottom, q: left },   // Player 3
+          { r: bottom, q: right },  // Player 4
+          { r: center, q: middle }, // Player 5
+        ];
+        break;
+      case 6:
+        startingPositions = [
+          { r: top, q: left },      // Player 1
+          { r: top, q: right },     // Player 2
+          { r: center, q: left },   // Player 3
+          { r: center, q: right },  // Player 4
+          { r: bottom, q: left },   // Player 5
+          { r: bottom, q: right },  // Player 6
+        ];
+        break;
+      case 7:
+        startingPositions = [
+          { r: top, q: left },      // Player 1
+          { r: top, q: right },     // Player 2
+          { r: center, q: left },   // Player 3
+          { r: center, q: right },  // Player 4
+          { r: bottom, q: left },   // Player 5
+          { r: bottom, q: right },  // Player 6
+          { r: center, q: middle }, // Player 7
+        ];
+        break;
     }
 
-    // This is just baked in and hard coded for now, for 4 players too.
-    this.#worldMap[top][left].playerOwner = players[0];
-    this.#worldMap[top][left].hexImprovement = hexImprovementType.HOME;
+    // Assign starting positions
+    players.forEach((player, index) => {
+      const pos = startingPositions[index];
+      console.log(`player${index + 1}`, `${pos.r}, ${pos.q}`);
+      this.#worldMap[pos.r][pos.q].playerOwner = player;
+      this.#worldMap[pos.r][pos.q].hexImprovement = hexImprovementType.HOME;
+    });
+  }
 
-    this.#worldMap[top][right].playerOwner = players[1];
-    this.#worldMap[top][right].hexImprovement = hexImprovementType.HOME;
-
-    this.#worldMap[bottom][left].playerOwner = players[2];
-    this.#worldMap[bottom][left].hexImprovement = hexImprovementType.HOME;
-
-    this.#worldMap[bottom][right].playerOwner = players[3];
-    this.#worldMap[bottom][right].hexImprovement = hexImprovementType.HOME;
+  calculateRoundsToPlay(roundsToPlay) {
+    if (roundsToPlay === 0) {
+      return 0; // No limit
+    }
+    // What we want is to not set the turn count limit to exactly what the user said.
+    // But to instead set it to something random that's relatively close to what they said.
+    // This way the player doesn't actually know when the game ends, but does have a general idea.
+    // Think kind of like a jack in the box. It could be any turn now....
+    let k = Math.ceil(roundsToPlay * 0.1);
+    let min = roundsToPlay - k;
+    let max = roundsToPlay + k;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   get roundsToPlay() {
