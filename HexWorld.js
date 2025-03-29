@@ -13,6 +13,8 @@ class HexWorld {
     let right = desiredColumns - 1;
     let top = 0;
     let bottom = desiredRows - 1;
+    let middle = Math.floor(desiredColumns / 2.0);
+    let center = Math.floor(desiredRows / 2.0);
 
     // Cycle through and make our 'world'
     // I think the for loops will need to change based on the hex type, flat or pointy
@@ -44,18 +46,34 @@ class HexWorld {
       this.#roundsToPlay = randomRoundsToPlay;
     }
 
-    // This is just baked in and hard coded for now, for 4 players too.
+    // This is just baked in and hard coded for now
+    console.log("player1", `${top}, ${left}`);
     this.#worldMap[top][left].playerOwner = players[0];
     this.#worldMap[top][left].hexImprovement = hexImprovementType.HOME;
-
-    this.#worldMap[top][right].playerOwner = players[1];
+  
+    console.log("player2", `${top}, ${middle}`);
+    this.#worldMap[top][middle].playerOwner = players[1];
+    this.#worldMap[top][middle].hexImprovement = hexImprovementType.HOME;
+  
+    console.log("player3", `${top}, ${right}`);
+    this.#worldMap[top][right].playerOwner = players[2];
     this.#worldMap[top][right].hexImprovement = hexImprovementType.HOME;
-
-    this.#worldMap[bottom][left].playerOwner = players[2];
+  
+    console.log("player4", `${bottom}, ${left}`);
+    this.#worldMap[bottom][left].playerOwner = players[3];
     this.#worldMap[bottom][left].hexImprovement = hexImprovementType.HOME;
-
-    this.#worldMap[bottom][right].playerOwner = players[3];
+  
+    console.log("player5", `${bottom}, ${middle}`);
+    this.#worldMap[bottom][middle].playerOwner = players[4];
+    this.#worldMap[bottom][middle].hexImprovement = hexImprovementType.HOME;
+  
+    console.log("player6", `${bottom}, ${right}`);
+    this.#worldMap[bottom][right].playerOwner = players[5];
     this.#worldMap[bottom][right].hexImprovement = hexImprovementType.HOME;
+  
+    console.log("player7", `${center}, ${middle}`);
+    this.#worldMap[center][middle].playerOwner = players[6];
+    this.#worldMap[center][middle].hexImprovement = hexImprovementType.HOME;
   }
 
   get roundsToPlay() {

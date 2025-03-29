@@ -53,7 +53,10 @@ function createWorld() {
         new HumanPlayer('Human', 'var(--player1-background)'),
         new ComputerPlayer('AI-1', 'var(--player2-background)'),
         new ComputerPlayer('AI-2', 'var(--player3-background)'),
-        new ComputerPlayer('AI-3', 'var(--player4-background)')
+        new ComputerPlayer('AI-3', 'var(--player4-background)'),
+        new ComputerPlayer('AI-4', 'var(--player5-background)'),
+        new ComputerPlayer('AI-5', 'var(--player6-background)'),
+        new ComputerPlayer('AI-6', 'var(--player7-background)')
     ];
 
     gameState = new GameState();
