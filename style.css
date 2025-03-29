@@ -17,7 +17,7 @@
 
 html {
   background-color: var(--ocean-background);
-  background-image: url("/images/oceanTile2.jpg");
+  background-image: url("../images/oceanTile2.jpg");
 }
 
 body {
