@@ -31,49 +31,42 @@ class HexWorld {
     }
 
     this.#players = players;
-    roundsToPlay = roundsToPlay * 1;
-    // Figure out how many rounds to play. If rounds to play is 0 then that means ther is no limit.
-    if (roundsToPlay !== 0) {
-      // What we want is to not set the turn count limit to exactly what the user said.
-      // But to instead set it to something random that's relatively close to what they said.
-      // This way the player doesn't actually know when the game ends, but does have a general idea.
-      // Think kind of like a jack in the box. It could be any turn now....
-      let k = Math.ceil(roundsToPlay * 0.1);
-      let min = roundsToPlay - k;
-      let max = roundsToPlay + k;
-      let randomRoundsToPlay =
-        Math.floor(Math.random() * (max - min + 1)) + min;
-      this.#roundsToPlay = randomRoundsToPlay;
-    }
+    this.#roundsToPlay = this.calculateRoundsToPlay(roundsToPlay);
 
-    // This is just baked in and hard coded for now
-    console.log("player1", `${top}, ${left}`);
-    this.#worldMap[top][left].playerOwner = players[0];
-    this.#worldMap[top][left].hexImprovement = hexImprovementType.HOME;
-  
-    console.log("player2", `${top}, ${middle}`);
-    this.#worldMap[top][middle].playerOwner = players[1];
-    this.#worldMap[top][middle].hexImprovement = hexImprovementType.HOME;
-  
-    console.log("player3", `${top}, ${right}`);
-    this.#worldMap[top][right].playerOwner = players[2];
-    this.#worldMap[top][right].hexImprovement = hexImprovementType.HOME;
-  
-    console.log("player4", `${bottom}, ${left}`);
-    this.#worldMap[bottom][left].playerOwner = players[3];
-    this.#worldMap[bottom][left].hexImprovement = hexImprovementType.HOME;
-  
-    console.log("player5", `${bottom}, ${middle}`);
-    this.#worldMap[bottom][middle].playerOwner = players[4];
-    this.#worldMap[bottom][middle].hexImprovement = hexImprovementType.HOME;
-  
-    console.log("player6", `${bottom}, ${right}`);
-    this.#worldMap[bottom][right].playerOwner = players[5];
-    this.#worldMap[bottom][right].hexImprovement = hexImprovementType.HOME;
-  
-    console.log("player7", `${center}, ${middle}`);
-    this.#worldMap[center][middle].playerOwner = players[6];
-    this.#worldMap[center][middle].hexImprovement = hexImprovementType.HOME;
+    // Define possible starting positions
+    const startingPositions = [
+      { r: top, q: left },      // Player 1 (Human)
+      { r: top, q: middle },    // Player 2
+      { r: top, q: right },     // Player 3
+      { r: bottom, q: left },   // Player 4
+      { r: bottom, q: middle }, // Player 5
+      { r: bottom, q: right },  // Player 6
+      { r: center, q: middle }, // Player 7
+    ];
+
+    // Assign starting positions based on number of players
+    players.forEach((player, index) => {
+      if (index < startingPositions.length) {
+        const pos = startingPositions[index];
+        console.log(`player${index + 1}`, `${pos.r}, ${pos.q}`);
+        this.#worldMap[pos.r][pos.q].playerOwner = player;
+        this.#worldMap[pos.r][pos.q].hexImprovement = hexImprovementType.HOME;
+      }
+    });
+  }
+
+  calculateRoundsToPlay(roundsToPlay) {
+    if (roundsToPlay === 0) {
+      return 0; // No limit
+    }
+    // What we want is to not set the turn count limit to exactly what the user said.
+    // But to instead set it to something random that's relatively close to what they said.
+    // This way the player doesn't actually know when the game ends, but does have a general idea.
+    // Think kind of like a jack in the box. It could be any turn now....
+    let k = Math.ceil(roundsToPlay * 0.1);
+    let min = roundsToPlay - k;
+    let max = roundsToPlay + k;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   get roundsToPlay() {

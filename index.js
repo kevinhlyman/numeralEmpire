@@ -49,15 +49,13 @@ closeModalButton.addEventListener('click',function(){
 
 //Create a new array of arrays based off of the what the user set in the menu fields
 function createWorld() {
-    let players = [
-        new HumanPlayer('Human', 'var(--player1-background)'),
-        new ComputerPlayer('AI-1', 'var(--player2-background)'),
-        new ComputerPlayer('AI-2', 'var(--player3-background)'),
-        new ComputerPlayer('AI-3', 'var(--player4-background)'),
-        new ComputerPlayer('AI-4', 'var(--player5-background)'),
-        new ComputerPlayer('AI-5', 'var(--player6-background)'),
-        new ComputerPlayer('AI-6', 'var(--player7-background)')
-    ];
+    let playerCount = Math.min(Math.max(2, parseInt(document.getElementById('playerCountInput').value)), 7);
+    let players = [new HumanPlayer('Human', 'var(--player1-background)')];
+    
+    // Add computer players based on selected count
+    for (let i = 1; i < playerCount; i++) {
+        players.push(new ComputerPlayer(`AI-${i}`, `var(--player${i + 1}-background)`));
+    }
 
     gameState = new GameState();
     gameState.setPlayers(players);
