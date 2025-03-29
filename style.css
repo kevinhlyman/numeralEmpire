@@ -25,12 +25,12 @@ body {
   justify-content: center;
   margin: 0;
   padding: 0;
-  min-width: min-content;  /* Ensure body is at least as wide as its content */
+  min-width: min-content; 
 }
 
 body > div {
-  min-width: min-content;  /* Ensure the main container is at least as wide as its content */
-  padding: 0 20px;  /* Add some padding on the sides */
+  min-width: min-content; 
+  padding: 0 20px; 
 }
 
 #menu {
