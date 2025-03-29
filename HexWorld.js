@@ -33,25 +33,68 @@ class HexWorld {
     this.#players = players;
     this.#roundsToPlay = this.calculateRoundsToPlay(roundsToPlay);
 
-    // Define possible starting positions
-    const startingPositions = [
-      { r: top, q: left },      // Player 1 (Human)
-      { r: top, q: middle },    // Player 2
-      { r: top, q: right },     // Player 3
-      { r: bottom, q: left },   // Player 4
-      { r: bottom, q: middle }, // Player 5
-      { r: bottom, q: right },  // Player 6
-      { r: center, q: middle }, // Player 7
-    ];
+    // Define starting positions based on number of players
+    let startingPositions;
+    switch (players.length) {
+      case 2:
+        startingPositions = [
+          { r: top, q: left },      // Player 1 (Human)
+          { r: bottom, q: right },   // Player 2 (opposite corner)
+        ];
+        break;
+      case 3:
+        startingPositions = [
+          { r: top, q: left },      // Player 1
+          { r: bottom, q: right },   // Player 2
+          { r: top, q: right },      // Player 3
+        ];
+        break;
+      case 4:
+        startingPositions = [
+          { r: top, q: left },      // Player 1
+          { r: top, q: right },     // Player 2
+          { r: bottom, q: left },   // Player 3
+          { r: bottom, q: right },  // Player 4
+        ];
+        break;
+      case 5:
+        startingPositions = [
+          { r: top, q: left },      // Player 1
+          { r: top, q: right },     // Player 2
+          { r: bottom, q: left },   // Player 3
+          { r: bottom, q: right },  // Player 4
+          { r: center, q: middle }, // Player 5
+        ];
+        break;
+      case 6:
+        startingPositions = [
+          { r: top, q: left },      // Player 1
+          { r: top, q: right },     // Player 2
+          { r: center, q: left },   // Player 3
+          { r: center, q: right },  // Player 4
+          { r: bottom, q: left },   // Player 5
+          { r: bottom, q: right },  // Player 6
+        ];
+        break;
+      case 7:
+        startingPositions = [
+          { r: top, q: left },      // Player 1
+          { r: top, q: right },     // Player 2
+          { r: center, q: left },   // Player 3
+          { r: center, q: right },  // Player 4
+          { r: bottom, q: left },   // Player 5
+          { r: bottom, q: right },  // Player 6
+          { r: center, q: middle }, // Player 7
+        ];
+        break;
+    }
 
-    // Assign starting positions based on number of players
+    // Assign starting positions
     players.forEach((player, index) => {
-      if (index < startingPositions.length) {
-        const pos = startingPositions[index];
-        console.log(`player${index + 1}`, `${pos.r}, ${pos.q}`);
-        this.#worldMap[pos.r][pos.q].playerOwner = player;
-        this.#worldMap[pos.r][pos.q].hexImprovement = hexImprovementType.HOME;
-      }
+      const pos = startingPositions[index];
+      console.log(`player${index + 1}`, `${pos.r}, ${pos.q}`);
+      this.#worldMap[pos.r][pos.q].playerOwner = player;
+      this.#worldMap[pos.r][pos.q].hexImprovement = hexImprovementType.HOME;
     });
   }
 
