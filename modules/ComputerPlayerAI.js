@@ -88,9 +88,10 @@ export class ComputerPlayerAI {
             );
 
             if (strategicEmptyHexes.length > 0) {
-                return strategicEmptyHexes[0];
+                return strategicEmptyHexes[Math.floor(Math.random() * strategicEmptyHexes.length)];
             }
-            return emptyHexes[0];
+            // Choose a random empty hex instead of always taking the first one
+            return emptyHexes[Math.floor(Math.random() * emptyHexes.length)];
         }
 
         // Last priority: Combine forces with friendly hexes
