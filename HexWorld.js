@@ -99,6 +99,7 @@ class HexWorld {
   }
 
   calculateRoundsToPlay(roundsToPlay) {
+    roundsToPlay = parseInt(roundsToPlay);
     if (roundsToPlay === 0) {
       return 0; // No limit
     }
