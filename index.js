@@ -196,6 +196,7 @@ function calculateCurrentPlayerStorage() {
 function endCurrentPlayerTurn() {
     // First check if the game is already over
     if (gameState.isGameOver()) {
+        displayGameOver();
         return; // Don't process any more turns if game is already over
     }
 
