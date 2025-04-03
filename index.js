@@ -194,29 +194,40 @@ function calculateCurrentPlayerStorage() {
 
 // End the current players turn and update a bunch of stuff.
 function endCurrentPlayerTurn() {
+    // First check if the game is already over
+    if (gameState.isGameOver()) {
+        displayGameOver();
+        return; // Don't process any more turns if game is already over
+    }
+
     // Unset any selected hex before changing turns and reset has moved
     gameState.unsetActiveHex();
     theWorld.resetMovementForPlayer(gameState.getCurrentPlayer());
+    console.log(`Ending player ${gameState.getCurrentPlayer().name} turn`);
 
+    // First increase the turn counter
+    gameState.increaseCurrentTurn();
+    
+    // Check for game over before calculating any new storage in case we've moved passed the last round.
     if (gameState.checkForGameOver(theWorld)) {
         displayGameOver();
-    } else {
-        console.log(`Ending player ${gameState.getCurrentPlayer().name} turn`);
-        gameState.increaseCurrentTurn();
-        
-        displayCurrentPlayer();
-        displayCurrentTurn();
-        displayCurrentRound();
-        displayCurrentPhase();
-        calculateCurrentPlayerStorage();
-        drawWorld();
-        updatePlayerStats();
+        return; // Exit early to prevent calculating storage for next turn
+    }
+    
+    // Only calculate storage and continue the game if it's not over
+    calculateCurrentPlayerStorage();
+    
+    displayCurrentPlayer();
+    displayCurrentTurn();
+    displayCurrentRound();
+    displayCurrentPhase();
+    drawWorld();
+    updatePlayerStats();
 
-        if (gameState.isComputerPlayer()) {
-            setTimeout(function() {
-                computerPlayerLoop();
-            }, 1000);
-        }
+    if (gameState.isComputerPlayer()) {
+        setTimeout(function() {
+            computerPlayerLoop();
+        }, 1000);
     }
 }
 
