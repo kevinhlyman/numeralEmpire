@@ -1,0 +1,12 @@
+{
+  "name": "numeralempire",
+  "version": "1.0.0",
+  "description": "Repository for the Numeral Empire game\r This is a game that will be like 'Slay' by Sean O'Connor: A very simple Civilization style game. But instead of units it will just be numbers and basic math. There will be specific 'buildings', just not specific units.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
