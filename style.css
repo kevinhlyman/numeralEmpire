@@ -5,6 +5,7 @@
   --ocean-background: #40e0d0;
   --empty-hex: #ffffff;
   --empty-hex-hover: #fafad2;
+  --hole-hex: #000000;
   --soldier-count: #ffffff;
   --player1-background: #ff651e;
   --player2-background: #a41623;
@@ -92,6 +93,11 @@ body > div {
   transition: background-color 0.3s;
   overflow: hidden;
   z-index: 2;
+}
+.hexagon.hole{
+  /* background-color: var(--hole-hex); */
+  cursor: not-allowed;
+  opacity:0;
 }
 .hex-info {
   text-align: center;

@@ -1,10 +1,10 @@
 {
   "name": "numeralempire",
   "version": "1.0.0",
-  "description": "Repository for the Numeral Empire game\r This is a game that will be like 'Slay' by Sean O'Connor: A very simple Civilization style game. But instead of units it will just be numbers and basic math. There will be specific 'buildings', just not specific units.",
+  "description": "A simple Civilization style game based on numbers and basic math, inspired by 'Slay' by Sean O'Connor",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch . -e html,css,js --exec \"http-server -s -p 5500\"",
+    "start": "nodemon --watch . -e html,css,js --exec \"http-server -s -c-1 -p 5501\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["game", "strategy", "civilization"],

@@ -23,37 +23,40 @@ export class WorldRenderer {
                 const hexagonDiv = document.createElement('div');
                 hexagonDiv.classList.add('hexagon');
                 hexagonDiv.classList.add('hexagon-pointy');
-                if (hexagon === activeHex) { hexagonDiv.classList.add('hexagon-selected'); }
                 hexagonDiv.setAttribute('q', hexagon.q);
                 hexagonDiv.setAttribute('r', hexagon.r);
                 hexagonDiv.setAttribute('s', hexagon.s);
                 hexagonDiv.setAttribute('rowIndex', rowIndex);
                 hexagonDiv.setAttribute('columnIndex', columnIndex);
-                if (hexagon.playerOwner) { hexagonDiv.style.backgroundColor = hexagon.playerOwner.color; }
-                if (displayCoords) { hexagonDiv.innerHTML = `<div class="hex-info">${hexagon.toString()}</div>`; }
-                if (hexagon.hexImprovement == hexImprovementType.NONE) {
-                    if (hexagon.soldierCount > 0) {
-                        let hexSoldierDiv = document.createElement('div');
-                        hexSoldierDiv.classList.add('soldier-div');
-                        hexSoldierDiv.innerHTML = hexagon.soldierCount;
-                        if (hexagon.hasMovedThisTurn) {
-                            hexSoldierDiv.classList.add('has-moved');
+                if (hexagon.isHole) { hexagonDiv.classList.add('hole')}
+                else{
+                    if (hexagon === activeHex) { hexagonDiv.classList.add('hexagon-selected'); }
+                    if (hexagon.playerOwner) { hexagonDiv.style.backgroundColor = hexagon.playerOwner.color; }
+                    if (displayCoords) { hexagonDiv.innerHTML = `<div class="hex-info">${hexagon.toString()}</div>`; }
+                    if (hexagon.hexImprovement == hexImprovementType.NONE) {
+                        if (hexagon.soldierCount > 0) {
+                            let hexSoldierDiv = document.createElement('div');
+                            hexSoldierDiv.classList.add('soldier-div');
+                            hexSoldierDiv.innerHTML = hexagon.soldierCount;
+                            if (hexagon.hasMovedThisTurn) {
+                                hexSoldierDiv.classList.add('has-moved');
+                            }
+                            hexagonDiv.appendChild(hexSoldierDiv);
                         }
-                        hexagonDiv.appendChild(hexSoldierDiv);
-                    }
-                } else {
-                    // Display the improvement
-                    let hexTypeDiv = document.createElement('div');
-                    hexTypeDiv.classList.add(`hexagon-improvement`);
-                    hexTypeDiv.classList.add(hexagon.hexImprovement);
-                    hexagonDiv.appendChild(hexTypeDiv);
-
-                    if (hexagon.hexImprovement == hexImprovementType.HOME) {
-                        //Then we want to show the 'storage' here
-                        let hexSoldierDiv = document.createElement('div');
-                        hexSoldierDiv.classList.add('soldier-div');
-                        hexSoldierDiv.innerHTML = hexagon.playerOwner.storage;
-                        hexagonDiv.appendChild(hexSoldierDiv);
+                    } else {
+                        // Display the improvement
+                        let hexTypeDiv = document.createElement('div');
+                        hexTypeDiv.classList.add(`hexagon-improvement`);
+                        hexTypeDiv.classList.add(hexagon.hexImprovement);
+                        hexagonDiv.appendChild(hexTypeDiv);
+    
+                        if (hexagon.hexImprovement == hexImprovementType.HOME) {
+                            //Then we want to show the 'storage' here
+                            let hexSoldierDiv = document.createElement('div');
+                            hexSoldierDiv.classList.add('soldier-div');
+                            hexSoldierDiv.innerHTML = hexagon.playerOwner.storage;
+                            hexagonDiv.appendChild(hexSoldierDiv);
+                        }
                     }
                 }
 

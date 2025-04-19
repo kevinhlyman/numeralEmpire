@@ -25,7 +25,7 @@ export class ComputerPlayerAI {
             if (availableSoldiers > 0) {
                 let adjacentHexes = this.world.getAdjacentHexes(hexagon);
                 let enemyHexes = adjacentHexes.filter(hex => hex.playerOwner !== currentPlayer && hex.playerOwner != null);
-                let emptyHexes = adjacentHexes.filter(hex => hex.playerOwner == null);
+                let emptyHexes = adjacentHexes.filter(hex => hex.playerOwner == null && !hex.isHole);
                 let selfHexes = adjacentHexes.filter(hex => hex.playerOwner === currentPlayer);
 
                 let hexToAttack = this.selectHexToAttack(enemyHexes, emptyHexes, selfHexes);

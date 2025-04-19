@@ -4,6 +4,7 @@ class Hex {
     #active;
     #hexTerrain;
     #hexImprovement;
+    #isHole;
     playerOwner;
     soldierCount;
 
@@ -33,6 +34,12 @@ class Hex {
      */
     set active(newActive){
         this.#active = newActive;
+    }
+    get isHole(){
+        return this.#isHole;
+    }
+    set isHole(newIsHole){
+        this.#isHole = newIsHole;
     }
 
     get hexTerrain(){

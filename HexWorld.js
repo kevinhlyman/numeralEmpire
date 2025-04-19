@@ -93,9 +93,24 @@ class HexWorld {
     players.forEach((player, index) => {
       const pos = startingPositions[index];
       console.log(`player${index + 1}`, `${pos.r}, ${pos.q}`);
+      console.log(index);
       this.#worldMap[pos.r][pos.q].playerOwner = player;
       this.#worldMap[pos.r][pos.q].hexImprovement = hexImprovementType.HOME;
     });
+
+    // Create some holes
+    // We'll make this user configurable later
+    const holeCount = Math.floor(desiredRows * desiredColumns * 0.1);
+    console.log('holeCount', holeCount);
+    for (let i = 0; i < holeCount; i++) {
+      let r = Math.floor(Math.random() * desiredRows);
+      let q = Math.floor(Math.random() * desiredColumns);
+      let hex = this.#worldMap[r][q];
+      if (hex.playerOwner) {
+        continue; // Skip if the hex is owned by a player
+      }
+      hex.isHole = true;
+    }
   }
 
   calculateRoundsToPlay(roundsToPlay) {
