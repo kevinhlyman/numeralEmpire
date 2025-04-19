@@ -86,7 +86,7 @@ function drawWorld() {
 
 // Add the event listeners to the hexes of the world.
 function addEventListenersToHexes() {
-    const hexes = document.querySelectorAll('.hexagon');
+    const hexes = document.querySelectorAll('.hexagon:not(.hole)');
     hexes.forEach((div) => {
         div.addEventListener('click', function() {
             let q = +this.getAttribute('q');
