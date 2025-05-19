@@ -182,11 +182,22 @@ class HexWorld {
             // If there aren't any soldiers in the hex we're moving to then we need to mark the hex as moved.
             defendingHex.hasMovedThisTurn = true;
         }
+        
+        // Preserve tower improvement, clear other improvements
+        if (defendingHex.hexImprovement !== hexImprovementType.TOWER) {
+          defendingHex.hexImprovement = hexImprovementType.NONE;
+        }
+
       } else {
         // They're moving from one regular hex to another. Combine soldier counts and clear out any improvements.
         let initialDefendingSoldierCount = defendingHex.soldierCount;
         defendingHex.soldierCount += attackingHex.soldierCount;
-        defendingHex.hexImprovement = hexImprovementType.NONE;
+        
+        // Preserve tower improvement, clear other improvements
+        if (defendingHex.hexImprovement !== hexImprovementType.TOWER) {
+          defendingHex.hexImprovement = hexImprovementType.NONE;
+        }
+        
         attackingHex.soldierCount = 0;
 
         if (initialDefendingSoldierCount <= 0) {
