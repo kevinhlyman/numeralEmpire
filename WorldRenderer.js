@@ -49,12 +49,21 @@ export class WorldRenderer {
                         hexTypeDiv.classList.add(`hexagon-improvement`);
                         hexTypeDiv.classList.add(hexagon.hexImprovement);
                         hexagonDiv.appendChild(hexTypeDiv);
-    
+
                         if (hexagon.hexImprovement == hexImprovementType.HOME) {
                             //Then we want to show the 'storage' here
                             let hexSoldierDiv = document.createElement('div');
                             hexSoldierDiv.classList.add('soldier-div');
                             hexSoldierDiv.innerHTML = hexagon.playerOwner.storage;
+                            hexagonDiv.appendChild(hexSoldierDiv);
+                        } else if (hexagon.hexImprovement == hexImprovementType.TOWER && hexagon.soldierCount > 0) {
+                            // Show soldier count for towers
+                            let hexSoldierDiv = document.createElement('div');
+                            hexSoldierDiv.classList.add('soldier-div');
+                            hexSoldierDiv.innerHTML = hexagon.soldierCount;
+                            if (hexagon.hasMovedThisTurn) {
+                                hexSoldierDiv.classList.add('has-moved');
+                            }
                             hexagonDiv.appendChild(hexSoldierDiv);
                         }
                     }

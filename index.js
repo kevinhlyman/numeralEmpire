@@ -95,7 +95,7 @@ function addEventListenersToHexes() {
             let localCP = getCurrentPlayer();
             
             if (gameState.isAttackingPhase()) {
-                // We are in teh attacking phase.
+                // We are in the attacking phase.
                 let activeHex = gameState.getActiveHex();
                 if (activeHex == null) {
                     // Only allow selecting hexes that haven't moved this turn
@@ -123,8 +123,9 @@ function addEventListenersToHexes() {
                             buildingBoardElements.forEach(el => el.classList.remove('selected'));
                             selectedImprovementType = null; // Reset selection after placement
                         }
-                    } else if (clickedHex.hexImprovement === hexImprovementType.NONE) {
-                        // Handle soldier placement (existing logic)
+                    } else if (clickedHex.hexImprovement === hexImprovementType.NONE || 
+                               clickedHex.hexImprovement === hexImprovementType.TOWER) {
+                        // Handle soldier placement - allow on empty hexes and towers
                         if (localCP.storage > 0) {
                             clickedHex.soldierCount++;
                             localCP.subtractFromStorage();
