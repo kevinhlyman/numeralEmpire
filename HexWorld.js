@@ -213,10 +213,40 @@ class HexWorld {
         attackingHex.hexImprovement === hexImprovementType.HOME
           ? attackingHex.playerOwner.storage
           : attackingHex.soldierCount;
+      
       let soldiersDefending =
         defendingHex.hexImprovement === hexImprovementType.HOME
           ? defendingHex.playerOwner.storage
           : defendingHex.soldierCount;
+
+      // Find friendly towers adjacent to the defending hex
+      let friendlyTowers = [];
+      if (defendingHex.playerOwner) {
+        const adjacentHexes = this.getAdjacentHexes(defendingHex);
+        adjacentHexes.forEach(adjacentHex => {
+          if (adjacentHex.playerOwner === defendingHex.playerOwner && 
+              adjacentHex.hexImprovement === hexImprovementType.TOWER &&
+              adjacentHex.soldierCount > 0) {
+            friendlyTowers.push(adjacentHex);
+          }
+        });
+      }
+
+      //we're going to do a while loop to subtract from the friendlyTowers until we run out of soldiersAttacking or friendlyTowers run out.
+      //Each loop will check to see if there are any soldiers left in the friendly tower and if not then remove it from the list
+      while (soldiersAttacking > 0 && friendlyTowers.length > 0) {
+        friendlyTowers.forEach(friendlyTower => {
+          if (friendlyTower.soldierCount > 0 && soldiersAttacking > 0) {
+            friendlyTower.soldierCount--;
+            soldiersAttacking--;
+          } else {
+            friendlyTowers = friendlyTowers.filter(tower => tower !== friendlyTower);
+          }
+        });
+      }
+      
+      
+      // Now that we've run out of tower soldiers or we have no more soldiers attacking we can figure out who won.
       let soldiersLeftOver = soldiersAttacking - soldiersDefending;
 
       if (defendingHex.hexImprovement !== hexImprovementType.NONE) {
@@ -243,14 +273,14 @@ class HexWorld {
           } else if (soldiersLeftOver < 0) {
             // Defending won
             attackingHex.soldierCount = 0;
-            defendingHex.playerOwner.setStorageTo(-soldiersLeftOver);
+            defendingHex.playerOwner.setStorageTo(-soldiersLeftOver);//Update the storage to how many soldiers are left
           } else {
             // They tied
             attackingHex.soldierCount = 0;
             defendingHex.playerOwner.zeroOutStorage();
           }
         } else {
-          // For now we're clearing out anything and just moving in. This will need to change as the Tower gets implemented
+          // For now we're clearing out anything and just moving in.
           defendingHex.soldierCount = soldiersAttacking;
           defendingHex.playerOwner = attackingPlayer;
           defendingHex.hexImprovement = hexImprovementType.NONE;
