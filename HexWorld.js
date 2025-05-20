@@ -94,8 +94,26 @@ class HexWorld {
       const pos = startingPositions[index];
       console.log(`player${index + 1}`, `${pos.r}, ${pos.q}`);
       console.log(index);
+      
+      // Assign the main home hex
       this.#worldMap[pos.r][pos.q].playerOwner = player;
       this.#worldMap[pos.r][pos.q].hexImprovement = hexImprovementType.HOME;
+      
+      // Add two adjacent hexes for each player
+      // Get adjacent hexes and assign the first two valid ones to the player
+      const mainHex = this.#worldMap[pos.r][pos.q];
+      const adjacentHexes = this.getAdjacentHexes(mainHex);
+      let assignedCount = 0;
+      
+      for (let i = 0; i < adjacentHexes.length && assignedCount < 2; i++) {
+        const adjHex = adjacentHexes[i];
+        // Only assign if the hex isn't already owned by another player
+        if (!adjHex.playerOwner) {
+          adjHex.playerOwner = player;
+          //adjHex.soldierCount = 1; // Start with 1 soldier in each adjacent hex
+          assignedCount++;
+        }
+      }
     });
 
     // Create some holes
@@ -157,7 +175,10 @@ class HexWorld {
   }
 
   changeImprovementTypeTo(improvementType, hexagon) {
-    hexagon.soldierCount = 0;
+    // Only clear soldiers for non-tower improvements
+    if (improvementType !== hexImprovementType.TOWER) {
+      hexagon.soldierCount = 0;
+    }
     hexagon.hexImprovement = improvementType;
   }
 
